@@ -113,7 +113,8 @@ namespace custom_containers
 		if (head_ == tail_) //очередь стала пустой
 		{
 			isEmpty_ = true;
-			--head_;
+			head_+=capacity_-1;
+			head_ %= capacity_;
 		}
 		return value;
 	}
@@ -138,22 +139,6 @@ namespace custom_containers
 			{
 				reallocate();
 			}
-		}
-	}
-
-    /**
-	 * \brief Вычисляет количество элементов в очереди.
-	 * \return Количество элементов в очереди.
-	 */
-	size_t Queue::size() const
-	{
-		if (tail_ > head_)
-		{
-			return tail_ - head_;
-		}
-		else
-		{
-			return tail_ + capacity_ - head_;
 		}
 	}
 
