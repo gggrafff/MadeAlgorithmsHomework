@@ -72,7 +72,6 @@ namespace custom_containers
 	public:
 		int32_t popFront();
 		void pushBack(int32_t value);
-		size_t size() const;
 
 		Queue();
 		~Queue();
