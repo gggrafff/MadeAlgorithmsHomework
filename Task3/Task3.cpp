@@ -33,10 +33,98 @@
  * 2
  */
 
+/*
+* Оценка сложности алгоритма.
+* Дополнительная память: O(n).
+* Среднее время работы: O(n*log(n)).
+*/
 
 #include <iostream>
+#include <vector>
+
+namespace custom_algorithms
+{
+    /**
+	 * \brief Функция, выполняющая сортировку слиянием в исходном массиве с подсчётом инверсий.
+	 * \tparam T Тип элементов в массиве.
+	 * \param arrayNumbers Массив элементов.
+	 * \return Количество инверсий.
+	 */
+	template<typename T>
+	size_t mergeSort(std::vector<T>& arrayNumbers)
+	{
+		size_t inversionsNumber = 0;
+		for (size_t blockSize = 1; blockSize < arrayNumbers.size(); blockSize *= 2)
+		{
+			for (size_t blockIterator = 0; blockIterator < arrayNumbers.size() - blockSize; blockIterator += 2 * blockSize)
+			{
+				//Производим слияние с сортировкой пары блоков, начинающуюся с элемента BlockIterator
+				//Левый размером BlockSize, правый размером BlockSize или меньше
+
+                //Определяем границы блоков.
+                //leftBorder - начало левого блока
+                //midBorder - начало правого блока
+                //rightBorder - конец(за последним элементом) правого блока
+				const auto leftBorder = blockIterator;
+				const auto midBorder = blockIterator + blockSize;
+				auto rightBorder = blockIterator + 2 * blockSize;
+				if (rightBorder > arrayNumbers.size())
+				{
+					rightBorder = arrayNumbers.size();
+				}
+
+                //Производим слияние в отдельном массиве sortedBlock
+				std::vector<T> sortedBlock(rightBorder - leftBorder);
+				size_t leftBlockIterator = 0;
+				size_t rightBlockIterator = 0;
+				//Пока в обоих массивах есть элементы, выбираем меньший из них и заносим в отсортированный блок
+                //Если элемент в левой части больше элемента в правой части, то обнаружены инверсии.
+                //При обнаружении инверсий увеличиваем счётчик инверсий на величину = <длина левой части> - <индекс текущего элемента в левой части>
+				while (leftBorder + leftBlockIterator < midBorder && midBorder + rightBlockIterator < rightBorder)
+				{
+					if (arrayNumbers[leftBorder + leftBlockIterator] <= arrayNumbers[midBorder + rightBlockIterator])
+					{
+						sortedBlock[leftBlockIterator + rightBlockIterator] = arrayNumbers[leftBorder + leftBlockIterator];
+						leftBlockIterator += 1;
+					}
+					else
+					{
+						sortedBlock[leftBlockIterator + rightBlockIterator] = arrayNumbers[midBorder + rightBlockIterator];
+						inversionsNumber += (midBorder - leftBorder) - leftBlockIterator;
+						rightBlockIterator += 1;
+					}
+				}
+				//После этого заносим оставшиеся элементы из левого или правого блока
+				while (leftBorder + leftBlockIterator < midBorder)
+				{
+					sortedBlock[leftBlockIterator + rightBlockIterator] = arrayNumbers[leftBorder + leftBlockIterator];
+					leftBlockIterator += 1;
+				}
+				while (midBorder + rightBlockIterator < rightBorder)
+				{
+					sortedBlock[leftBlockIterator + rightBlockIterator] = arrayNumbers[midBorder + rightBlockIterator];
+					rightBlockIterator += 1;
+				}
+
+                //Копируем отсортированные элементы в исходный массив
+				for (size_t mergeIterator = 0; mergeIterator < leftBlockIterator + rightBlockIterator; ++mergeIterator)
+				{
+					arrayNumbers[leftBorder + mergeIterator] = sortedBlock[mergeIterator];
+				}
+			}
+		}
+        return inversionsNumber;
+	}
+}
+
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	std::vector<int32_t> numbers;
+	int32_t number{ 0 };
+	while (std::cin >> number)
+	{
+		numbers.push_back(number);
+	}
+	std::cout << custom_algorithms::mergeSort(numbers);
 }
