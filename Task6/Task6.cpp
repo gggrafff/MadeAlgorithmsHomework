@@ -80,74 +80,110 @@
 
 namespace custom_containers
 {
+
+	/**
+	 * \brief Класс, реализующий двоичное дерево поиска в целом и узел дерева в частности.
+	 * \tparam T Тип элементов, хранящихся в дереве. 
+	 */
 	template<typename T>
 	class BinarySearchTree
 	{
 	public:
-		explicit BinarySearchTree(T root)
-		{
-			key_ = root;
-		}
-		~BinarySearchTree()
-		{
-			delete left_;
-			delete right_;
-		}
+		explicit BinarySearchTree(T root);
+		~BinarySearchTree();
 		BinarySearchTree(const BinarySearchTree& other) = delete;
 		BinarySearchTree(BinarySearchTree&& other) noexcept = delete;
 		BinarySearchTree& operator=(const BinarySearchTree& other) = delete;
 		BinarySearchTree& operator=(BinarySearchTree&& other) noexcept = delete;
-		void bfs(std::function<void(const T&)> action)
+
+		/**
+		 * \brief Обход дерева в ширину.
+		 * \param action Функция, выполняемая над элементами.
+		 */
+		void bfs(std::function<void(const T&)> action);
+		/**
+		 * \brief Вставка элемента в дерево.
+		 * \param value Вставляемый элемент.
+		 */
+		void insert(const T& value);
+
+	private:
+		/**
+		 * \brief Значение элемента, хранящееся в текущем узле. 
+		 */
+		T key_;
+		/**
+		 * \brief Указатель на левого потомка.
+		 */
+		BinarySearchTree* left_{ nullptr };
+		/**
+		 * \brief Указатель на правого потомка. 
+		 */
+		BinarySearchTree* right_{ nullptr };
+	};
+
+	template <typename T>
+	BinarySearchTree<T>::BinarySearchTree(T root)
+	{
+		key_ = root;
+	}
+
+	template <typename T>
+	BinarySearchTree<T>::~BinarySearchTree()
+	{
+		delete left_;
+		delete right_;
+	}
+
+	template <typename T>
+	void BinarySearchTree<T>::bfs(std::function<void(const T&)> action)
+	{
+		std::queue<BinarySearchTree*> elementsForProcessing;
+		elementsForProcessing.push(this);
+		while (!elementsForProcessing.empty())
 		{
-			std::queue<BinarySearchTree*> elementsForProcessing;
-			elementsForProcessing.push(this);
-			while (!elementsForProcessing.empty())
+			auto currentElement = elementsForProcessing.front();
+			if (currentElement->left_ != nullptr)
 			{
-				auto currentElement = elementsForProcessing.front();
-				if (currentElement->left_ != nullptr)
-				{
-					elementsForProcessing.push(currentElement->left_);
-				}
-				if (currentElement->right_ != nullptr)
-				{
-					elementsForProcessing.push(currentElement->right_);
-				}
-				action(currentElement->key_);
-				elementsForProcessing.pop();
+				elementsForProcessing.push(currentElement->left_);
 			}
-		}
-		void insert(const T& value)
-		{
-			if (value < key_)
+			if (currentElement->right_ != nullptr)
 			{
-				if (left_ == nullptr)
-				{
-					left_ = new BinarySearchTree(value);
-				}
-				else
-				{
-					left_->insert(value);
-				}
+				elementsForProcessing.push(currentElement->right_);
+			}
+			action(currentElement->key_);
+			elementsForProcessing.pop();
+		}
+	}
+
+	template <typename T>
+	void BinarySearchTree<T>::insert(const T& value)
+	{
+		if (value < key_)
+		{
+			if (left_ == nullptr)
+			{
+				left_ = new BinarySearchTree(value);
 			}
 			else
 			{
-				if (right_ == nullptr)
-				{
-					right_ = new BinarySearchTree(value);
-				}
-				else
-				{
-					right_->insert(value);
-				}
+				left_->insert(value);
 			}
 		}
-
-	private:
-		T key_;
-		BinarySearchTree* left_{ nullptr };
-		BinarySearchTree* right_{ nullptr };
-	};
+		else
+		{
+			if (right_ == nullptr)
+			{
+				right_ = new BinarySearchTree(value);
+			}
+			else
+			{
+				right_->insert(value);
+			}
+		}
+	}
 }
+
 
 void processNumbers(const std::vector<int32_t>& numbers)
 {
