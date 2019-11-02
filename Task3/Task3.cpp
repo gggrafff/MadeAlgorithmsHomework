@@ -53,7 +53,7 @@ namespace custom_algorithms
 	 * \return Количество инверсий.
 	 */
 	template<typename T>
-	size_t mergeSort(std::vector<T>& arrayNumbers, std::function<bool(const T& lhs, const T& rhs)> less = std::less<T>())
+	size_t mergeSort(std::vector<T>& arrayNumbers, const std::function<bool(const T& lhs, const T& rhs)> less = std::less<T>())
 	{
 		size_t inversionsNumber = 0;
 		for (size_t blockSize = 1; blockSize < arrayNumbers.size(); blockSize *= 2)
