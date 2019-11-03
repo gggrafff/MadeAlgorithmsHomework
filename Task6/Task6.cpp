@@ -159,27 +159,28 @@ namespace custom_containers
 	template <typename T>
 	void BinarySearchTree<T>::insert(const T& value)
 	{
-		if (value < key_)
+		BinarySearchTree* parent{nullptr};
+		BinarySearchTree* insertPlace = this;
+		while(insertPlace!=nullptr)
 		{
-			if (left_ == nullptr)
+			parent = insertPlace;
+			if (value < insertPlace->key_)
 			{
-				left_ = new BinarySearchTree(value);
+				insertPlace = insertPlace->left_;
 			}
 			else
 			{
-				left_->insert(value);
+				insertPlace = insertPlace->right_;
 			}
+		}
+		insertPlace = new BinarySearchTree(value);
+		if (value < parent->key_)
+		{
+			parent->left_ = insertPlace;
 		}
 		else
 		{
-			if (right_ == nullptr)
-			{
-				right_ = new BinarySearchTree(value);
-			}
-			else
-			{
-				right_->insert(value);
-			}
+			parent->right_ = insertPlace;
 		}
 	}
 }
