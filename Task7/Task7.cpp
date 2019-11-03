@@ -1,6 +1,61 @@
+Ôªø/*
+ * 7_4. –ü–æ—Ä—è–¥–∫–æ–≤—ã–µ —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏ –°–ø–ª–µ–π
+ * 
+ * –û–≥—Ä–∞–Ω–∏—á–µ–Ω–∏–µ –≤—Ä–µ–º–µ–Ω–∏	0.3 —Å–µ–∫—É–Ω–¥—ã
+ * –û–≥—Ä–∞–Ω–∏—á–µ–Ω–∏–µ –ø–∞–º—è—Ç–∏	20Mb
+ *
+ * –ú–Ω–æ–∂–µ—Å—Ç–≤–æ –Ω–∞—Ç—É—Ä–∞–ª—å–Ω—ã—Ö —á–∏—Å–µ–ª –ø–æ—Å—Ç–æ—è–Ω–Ω–æ –º–µ–Ω—è–µ—Ç—Å—è. –≠–ª–µ–º–µ–Ω—Ç—ã –≤ –Ω–µ–º –¥–æ–±–∞–≤–ª—è—é—Ç—Å—è –∏ —É–¥–∞–ª—è—é—Ç—Å—è –ø–æ –æ–¥–Ω–æ–º—É. –í—ã—á–∏—Å–ª–∏—Ç–µ —É–∫–∞–∑–∞–Ω–Ω—ã–µ –ø–æ—Ä—è–¥–∫–æ–≤—ã–µ —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏ –ø–æ—Å–ª–µ –∫–∞–∂–¥–æ–≥–æ –¥–æ–±–∞–≤–ª–µ–Ω–∏—è –∏–ª–∏ —É–¥–∞–ª–µ–Ω–∏—è.
+ * –¢—Ä–µ–±—É–µ–º–∞—è —Å–∫–æ—Ä–æ—Å—Ç—å –≤—ã–ø–æ–ª–Ω–µ–Ω–∏—è –∑–∞–ø—Ä–æ—Å–∞ - O(log n) –∞–º–æ—Ä—Ç–∏–∑–∏—Ä–æ–≤–∞–Ω–æ.
+ * –í —Ä–µ–∞–ª–∏–∑–∞—Ü–∏–∏ –∏—Å–ø–æ–ª—å–∑—É–π—Ç–µ —Å–ø–ª–µ–π-–¥–µ—Ä–µ–≤—å—è.
+  *
+ * –§–æ—Ä–º–∞—Ç –≤–≤–æ–¥–∞
+ * –î–∞–Ω–æ —á–∏—Å–ª–æ N –∏ N —Å—Ç—Ä–æ–∫. (1 ‚â§ N ‚â§ 10000)
+ * –ö–∞–∂–¥–∞—è —Å—Ç—Ä–æ–∫–∞ —Å–æ–¥–µ—Ä–∂–∏—Ç –∫–æ–º–∞–Ω–¥—É –¥–æ–±–∞–≤–ª–µ–Ω–∏—è –∏–ª–∏ —É–¥–∞–ª–µ–Ω–∏—è –Ω–∞—Ç—É—Ä–∞–ª—å–Ω—ã—Ö —á–∏—Å–µ–ª (–æ—Ç 1 –¥–æ 109), –∞ —Ç–∞–∫–∂–µ –∑–∞–ø—Ä–æ—Å –Ω–∞ –ø–æ–ª—É—á–µ–Ω–∏–µ k-–æ–π –ø–æ—Ä—è–¥–∫–æ–≤–æ–π —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏ (0 ‚â§ k < N).
+ * –ö–æ–º–∞–Ω–¥–∞ –¥–æ–±–∞–≤–ª–µ–Ω–∏—è —á–∏—Å–ª–∞ A –∑–∞–¥–∞–µ—Ç—Å—è –ø–æ–ª–æ–∂–∏—Ç–µ–ª—å–Ω—ã–º —á–∏—Å–ª–æ–º A, –∫–æ–º–∞–Ω–¥–∞ —É–¥–∞–ª–µ–Ω–∏—è —á–∏—Å–ª–∞ A –∑–∞–¥–∞–µ—Ç—Å—è –æ—Ç—Ä–∏—Ü–∞—Ç–µ–ª—å–Ω—ã–º —á–∏—Å–ª–æ–º ‚Äú-A‚Äù.
+  *
+ * –§–æ—Ä–º–∞—Ç –≤—ã–≤–æ–¥–∞
+ * N —Å—Ç—Ä–æ–∫. –í –∫–∞–∂–¥–æ–π —Å—Ç—Ä–æ–∫–µ - —Ç–µ–∫—É—â–∞—è k-–∞—è –ø–æ—Ä—è–¥–∫–æ–≤–∞—è —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∞ –∏–∑ –∑–∞–ø—Ä–æ—Å–∞.
+ *
+ * –ö–æ–Ω—Ç—Ä–æ–ª—å–Ω—ã–µ –ø—Ä–∏–º–µ—Ä—ã: 
+ * –ü—Ä–∏–º–µ—Ä 1
+ * –í–≤–æ–¥:
+ * 3
+ * 1 0
+ * 2 0
+ * -1 0
+ * –í—ã–≤–æ–¥:
+ * 1 1 2
+ * 
+ * –ü—Ä–∏–º–µ—Ä 2
+ * –í–≤–æ–¥:
+ * 5
+ * 40 0
+ * 10 1
+ * 4 1
+ * -10 0
+ * 50 2
+ * –í—ã–≤–æ–¥: 
+ * 40
+ * 40
+ * 10
+ * 4
+ * 50
+ */
+
+/*
+ * –°–ª–æ–∂–Ω–æ—Å—Ç—å –∞–ª–≥–æ—Ä–∏—Ç–º–∞ –∞–º–æ—Ä—Ç–∏–∑–∏—Ä–æ–≤–∞–Ω–Ω–∞—è: 
+ * –†–∞—Å—Ö–æ–¥ –ø–∞–º—è—Ç–∏			O(n)
+ * –ü–æ–∏—Å–∫					O(log n)
+ * –í—Å—Ç–∞–≤–∫–∞					O(log n)
+ * –£–¥–∞–ª–µ–Ω–∏–µ					O(log n)
+ * –ü–æ–∏—Å–∫ k-–π —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏		O(log n)
+ */
+
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <ctime>
+#include <set>
 
 namespace custom_containers
 {
@@ -17,29 +72,29 @@ namespace custom_containers
 		SplayTree& operator=(SplayTree&& other) noexcept = delete;
 
 		/**
-		 * \brief ¬ÒÚ‡‚Í‡ ˝ÎÂÏÂÌÚ‡ ‚ ‰ÂÂ‚Ó. 
-		 * \param key ¬ÒÚ‡‚ÎˇÂÏ˚È ˝ÎÂÏÂÌÚ. 
+		 * \brief –í—Å—Ç–∞–≤–∫–∞ —ç–ª–µ–º–µ–Ω—Ç–∞ –≤ –¥–µ—Ä–µ–≤–æ. 
+		 * \param key –í—Å—Ç–∞–≤–ª—è–µ–º—ã–π —ç–ª–µ–º–µ–Ω—Ç. 
 		 */
 		void insert(const T & key) {
-			//≈ÒÎË ‰ÂÂ‚Ó ÔÛÒÚÓÂ, ÚÓ ‚ÒÚ‡‚ÎˇÂÏ ˝ÎÂÏÂÌÚ ‚ ÍÓÂÌ¸. 
+			//–ï—Å–ª–∏ –¥–µ—Ä–µ–≤–æ –ø—É—Å—Ç–æ–µ, —Ç–æ –≤—Å—Ç–∞–≤–ª—è–µ–º —ç–ª–µ–º–µ–Ω—Ç –≤ –∫–æ—Ä–µ–Ω—å. 
 			if (root_==nullptr)
 			{
 				root_ = new Node(key);
 				return;
 			}
 
-			//»˘ÂÏ ÏÂÒÚÓ ‚ÒÚ‡‚ÍË.
+			//–ò—â–µ–º –º–µ—Å—Ç–æ –≤—Å—Ç–∞–≤–∫–∏.
 			Node* parent = nullptr;
 			Node* insertPlace = root_;
 			while (insertPlace != nullptr) {
 				parent = insertPlace;
 				if (parent->data < key)
-					insertPlace = parent->rightChild;
+					insertPlace = parent->right;
 				else
-					insertPlace = parent->leftChild;
+					insertPlace = parent->left;
 			}
 
-			//—ÓÁ‰‡∏Ï ˝ÎÂÏÂÌÚ Ë Ò‚ˇÁ˚‚‡ÂÏ ÒÓÁ‰‡ÂÏ ‚Á‡ËÏÌ˚Â ÒÒ˚ÎÍË Ò Ó‰ËÚÂÎÂÏ.
+			//–°–æ–∑–¥–∞—ë–º —ç–ª–µ–º–µ–Ω—Ç –∏ —Å–≤—è–∑—ã–≤–∞–µ–º —Å–æ–∑–¥–∞–µ–º –≤–∑–∞–∏–º–Ω—ã–µ —Å—Å—ã–ª–∫–∏ —Å —Ä–æ–¥–∏—Ç–µ–ª–µ–º.
 			Node* insertElement = new Node(key);
 			insertElement->parent = parent;
 			if (insertElement->data < parent->data)
@@ -47,28 +102,34 @@ namespace custom_containers
 			else
 				parent->right = insertElement;
 
-			//œÂÂÏÂ˘‡ÂÏ ‚Â¯ËÌÛ ‚ ÍÓÂÌ¸.
+			//–ü–µ—Ä–µ–º–µ—â–∞–µ–º –≤–µ—Ä—à–∏–Ω—É –≤ –∫–æ—Ä–µ–Ω—å.
 			splay(insertElement);
 		}
 
 		/**
-		 * \brief ”‰‡ÎÂÌËÂ ÁÌ‡˜ÂÌËˇ ËÁ ‰ÂÂ‚‡.
-		 * \param key ”‰‡ÎˇÂÏÓÂ ÁÌ‡˜ÂÌËÂ.
+		 * \brief –£–¥–∞–ª–µ–Ω–∏–µ –∑–Ω–∞—á–µ–Ω–∏—è –∏–∑ –¥–µ—Ä–µ–≤–∞.
+		 * \param key –£–¥–∞–ª—è–µ–º–æ–µ –∑–Ω–∞—á–µ–Ω–∏–µ.
 		 */
-		void remove(const T & key) {
-			Node * removeElement = searchNode(key); //Õ‡ıÓ‰ËÏ ˝ÎÂÏÂÌÚ ‚ ‰ÂÂ‚Â
+		void remove(const T & key) 
+		{
+			Node * removeElement = searchNode(key); //–ù–∞—Ö–æ–¥–∏–º —ç–ª–µ–º–µ–Ω—Ç –≤ –¥–µ—Ä–µ–≤–µ, –ø–æ–º–µ—â–∞–µ–º –≤ –∫–æ—Ä–µ–Ω—å
 
 			if (removeElement != nullptr) {
-				//≈ÒÎË Ó‰ËÌ ËÁ ÔÓÚÓÏÍÓ‚ Û‰‡ÎˇÂÏÓ„Ó ÛÁÎ‡ ÓÚÒÛÚÒÚ‚ÛÂÚ, ÚÓ Û‰‡ÎËÚ¸ ÎÂ„ÍÓ - ÔÓÒÚÓ ÒÓÂ‰ËÌˇÂÏ Ó‰ËÚÂÎˇ Ë ÔÓÚÓÏÍ‡ Û‰‡ÎˇÂÏÓ„Ó ÛÁÎ‡.
+				//–ï—Å–ª–∏ –æ–¥–∏–Ω –∏–∑ –ø–æ—Ç–æ–º–∫–æ–≤ —É–¥–∞–ª—è–µ–º–æ–≥–æ —É–∑–ª–∞ –æ—Ç—Å—É—Ç—Å—Ç–≤—É–µ—Ç, —Ç–æ —É–¥–∞–ª–∏—Ç—å –ª–µ–≥–∫–æ - –ø—Ä–æ—Å—Ç–æ –¥–µ–ª–∞–µ–º –ø–æ—Ç–æ–º–∫–∞ –∫–æ—Ä–Ω–µ–º.
 				if (removeElement->right == nullptr)
+				{
 					transplant(removeElement, removeElement->left);
+				}
 				else if (removeElement->left == nullptr)
+				{
 					transplant(removeElement, removeElement->right);
+				}
 				else 
 				{
-					//≈ÒÎË ÒÛ˘ÂÒÚ‚Û˛Ú Ó·‡ ÔÓÚÓÏÍ‡ Û Û‰‡ÎˇÂÏÓ„Ó ˝ÎÂÏÂÌÚ‡, 
-					//ÚÓ Ì‡ıÓ‰ËÏ ÒÎÂ‰Û˛˘ËÈ ÔÓ ‚ÂÎË˜ËÌÂ ˝ÎÂÏÂÌÚ ‚ Ô‡‚ÓÏ ÔÓ‰‰ÂÂ‚Â Ë ÔÓÏÂ˘‡ÂÏ Ì‡ ÏÂÒÚÓ Û‰‡ÎˇÂÏÓ„Ó.
-					Node * newLocalRoot = minimumNode(removeElement->right);
+					//–ï—Å–ª–∏ —Å—É—â–µ—Å—Ç–≤—É—é—Ç –æ–±–∞ –ø–æ—Ç–æ–º–∫–∞ —É —É–¥–∞–ª—è–µ–º–æ–≥–æ —ç–ª–µ–º–µ–Ω—Ç–∞, 
+					//—Ç–æ –Ω–∞—Ö–æ–¥–∏–º —Å–ª–µ–¥—É—é—â–∏–π –ø–æ –≤–µ–ª–∏—á–∏–Ω–µ —ç–ª–µ–º–µ–Ω—Ç –≤ –ø—Ä–∞–≤–æ–º –ø–æ–¥–¥–µ—Ä–µ–≤–µ –∏ –ø–æ–º–µ—â–∞–µ–º –Ω–∞ –º–µ—Å—Ç–æ —É–¥–∞–ª—è–µ–º–æ–≥–æ.
+					auto newLocalRoot = minimumNode(removeElement->right);
+					auto parentNewLocalRoot = newLocalRoot->parent;
 
 					if (newLocalRoot->parent != removeElement) {
 
@@ -83,30 +144,34 @@ namespace custom_containers
 					newLocalRoot->left = removeElement->left;
 					newLocalRoot->left->parent = newLocalRoot;
 
+					if (parentNewLocalRoot)
+						parentNewLocalRoot->refreshSizes();
+
 					splay(newLocalRoot);
 				}
-
+				removeElement->right = nullptr;
+				removeElement->left = nullptr;
 				delete removeElement;
 			}
 		}
 
 		/**
-		 * \brief œÓ‚ÂˇÂÚ, ÒÓ‰ÂÊËÚÒˇ ÎË ˝ÎÂÏÂÌÚ ‚ ‰ÂÂ‚Â. 
-		 * \param key œÓ‚ÂˇÂÏ˚È ˝ÎÂÏÂÌÚ.
-		 * \return True, ÂÒÎË ˝ÎÂÏÂÌÚ ÒÓ‰ÂÊËÚÒˇ ‚ ‰ÂÂ‚Â, ËÌ‡˜Â - false.
+		 * \brief –ü—Ä–æ–≤–µ—Ä—è–µ—Ç, —Å–æ–¥–µ—Ä–∂–∏—Ç—Å—è –ª–∏ —ç–ª–µ–º–µ–Ω—Ç –≤ –¥–µ—Ä–µ–≤–µ. 
+		 * \param key –ü—Ä–æ–≤–µ—Ä—è–µ–º—ã–π —ç–ª–µ–º–µ–Ω—Ç.
+		 * \return True, –µ—Å–ª–∏ —ç–ª–µ–º–µ–Ω—Ç —Å–æ–¥–µ—Ä–∂–∏—Ç—Å—è –≤ –¥–µ—Ä–µ–≤–µ, –∏–Ω–∞—á–µ - false.
 		 */
 		bool contains(const T &key) { return searchNode(key) != nullptr; }
 
 		/**
-		 * \brief œÓ‚ÂˇÂÚ, ÂÒÚ¸ ÎË ˝ÎÂÏÂÌÚ˚ ‚ ‰ÂÂ‚Â.
-		 * \return True, ÂÒÎË ‰ÂÂ‚Ó ÔÛÒÚÓÂ, ËÌ‡˜Â - false. 
+		 * \brief –ü—Ä–æ–≤–µ—Ä—è–µ—Ç, –µ—Å—Ç—å –ª–∏ —ç–ª–µ–º–µ–Ω—Ç—ã –≤ –¥–µ—Ä–µ–≤–µ.
+		 * \return True, –µ—Å–ª–∏ –¥–µ—Ä–µ–≤–æ –ø—É—Å—Ç–æ–µ, –∏–Ω–∞—á–µ - false. 
 		 */
 		bool isEmpty() const { return root_ == nullptr; }
 
 		/**
-		 * \brief œÓËÒÍ ÒÎÂ‰Û˛˘Â„Ó (ÔÓ ‚ÂÎË˜ËÌÂ ‚ ÔÓˇ‰ÍÂ ‚ÓÁ‡ÒÚ‡ÌËˇ) ÁÌ‡˜ÂÌËˇ ‚ ‰ÂÂ‚Â.
-		 * \param key «Ì‡˜ÂÌËÂ, ‰Îˇ ÍÓÚÓÓ„Ó Ë˘ÂÏ ÒÎÂ‰Û˛˘ÂÂ. 
-		 * \return —ÎÂ‰Û˛˘ÂÂ ÁÌ‡˜ÂÌËÂ.
+		 * \brief –ü–æ–∏—Å–∫ —Å–ª–µ–¥—É—é—â–µ–≥–æ (–ø–æ –≤–µ–ª–∏—á–∏–Ω–µ –≤ –ø–æ—Ä—è–¥–∫–µ –≤–æ–∑—Ä–∞—Å—Ç–∞–Ω–∏—è) –∑–Ω–∞—á–µ–Ω–∏—è –≤ –¥–µ—Ä–µ–≤–µ.
+		 * \param key –ó–Ω–∞—á–µ–Ω–∏–µ, –¥–ª—è –∫–æ—Ç–æ—Ä–æ–≥–æ –∏—â–µ–º —Å–ª–µ–¥—É—é—â–µ–µ. 
+		 * \return –°–ª–µ–¥—É—é—â–µ–µ –∑–Ω–∞—á–µ–Ω–∏–µ.
 		 */
 		T successor(const T & key) {
 			if (successorNode(searchNode(key)) != nullptr) {
@@ -118,9 +183,9 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief œÓËÒÍ ÔÂ‰˚‰Û˘Â„Ó (ÔÓ ‚ÂÎË˜ËÌÂ ‚ ÔÓˇ‰ÍÂ ‚ÓÁ‡ÒÚ‡ÌËˇ) ÁÌ‡˜ÂÌËˇ ‚ ‰ÂÂ‚Â.
-		 * \param key «Ì‡˜ÂÌËÂ, ‰Îˇ ÍÓÚÓÓ„Ó Ë˘ÂÏ ÔÂ‰˚‰Û˘ÂÂ.
-		 * \return œÂ‰˚‰Û˘ÂÂ ÁÌ‡˜ÂÌËÂ.
+		 * \brief –ü–æ–∏—Å–∫ –ø—Ä–µ–¥—ã–¥—É—â–µ–≥–æ (–ø–æ –≤–µ–ª–∏—á–∏–Ω–µ –≤ –ø–æ—Ä—è–¥–∫–µ –≤–æ–∑—Ä–∞—Å—Ç–∞–Ω–∏—è) –∑–Ω–∞—á–µ–Ω–∏—è –≤ –¥–µ—Ä–µ–≤–µ.
+		 * \param key –ó–Ω–∞—á–µ–Ω–∏–µ, –¥–ª—è –∫–æ—Ç–æ—Ä–æ–≥–æ –∏—â–µ–º –ø—Ä–µ–¥—ã–¥—É—â–µ–µ.
+		 * \return –ü—Ä–µ–¥—ã–¥—É—â–µ–µ –∑–Ω–∞—á–µ–Ω–∏–µ.
 		 */
 		T predecessor(const T & key) {
 			if (predecessorNode(searchNode(key)) != nullptr) {
@@ -131,28 +196,60 @@ namespace custom_containers
 			}
 		}
 
+		/**
+		 * \brief –ü–æ–∏—Å–∫ k-–π –ø–æ—Ä—è–¥–∫–æ–≤–æ–π —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏. 
+		 * \param k –ü–æ—Ä—è–¥–æ–∫ —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏
+		 * \return –ó–Ω–∞—á–µ–Ω–∏–µ k-–π –ø–æ—Ä—è–¥–∫–æ–≤–æ–π —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏. 
+		 */
+		T searchStatistics(size_t k)
+		{
+			Node* current = root_;
+			while (k >= 0 && current!=nullptr)
+			{
+				if ((current->left?current->left->size:0) == k)
+				{
+					return current->data;
+				} 
+				else if (k < (current->left ? current->left->size : 0))
+				{
+					current = current->left;
+				}
+				else
+				{
+					k -= (current->left ? current->left->size : 0) + 1;
+					//if (k==0)
+					current = current->right;
+				}
+			}
+			return T();
+		}
+
 	private:
-		//Œ·˙ˇ‚ÎÂÌËˇ ÚËÔÓ‚ ‰‡ÌÌ˚ı.
+		//–û–±—ä—è–≤–ª–µ–Ω–∏—è —Ç–∏–ø–æ–≤ –¥–∞–Ω–Ω—ã—Ö.
 
 		/**
-		 * \brief —ÚÛÍÚÛ‡, ÓÔËÒ˚‚‡˛˘‡ˇ ÛÁÂÎ ‰ÂÂ‚‡.
+		 * \brief –°—Ç—Ä—É–∫—Ç—É—Ä–∞, –æ–ø–∏—Å—ã–≤–∞—é—â–∞—è —É–∑–µ–ª –¥–µ—Ä–µ–≤–∞.
 		 */
 		struct Node
 		{
 			/**
-			 * \brief ”Í‡Á‡ÚÂÎ¸ Ì‡ ÎÂ‚Ó„Ó ÔÓÚÓÏÍ‡.
+			 * \brief –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ –ª–µ–≤–æ–≥–æ –ø–æ—Ç–æ–º–∫–∞.
 			 */
 			Node* left;
 			/**
-			 * \brief ”Í‡Á‡ÚÂÎ¸ Ì‡ Ô‡‚Ó„Ó ÔÓÚÓÏÍ‡. 
+			 * \brief –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ –ø—Ä–∞–≤–æ–≥–æ –ø–æ—Ç–æ–º–∫–∞. 
 			 */
 			Node* right;
 			/**
-			 * \brief ”Í‡Á‡ÚÂÎ¸ Ì‡ Ó‰ËÚÂÎˇ.
+			 * \brief –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —Ä–æ–¥–∏—Ç–µ–ª—è.
 			 */
 			Node* parent;
 			/**
-			 * \brief ƒ‡ÌÌ˚Â, ı‡Ìˇ˘ËÂÒˇ ‚ ÛÁÎÂ.
+			 * \brief –ö–æ–ª–∏—á–µ—Å—Ç–≤–æ —É–∑–ª–æ–≤ –≤ –ø–æ–¥–¥–µ—Ä–µ–≤–µ, –∫–æ—Ä–Ω–µ–º –∫–æ—Ç–æ—Ä–æ–≥–æ —è–≤–ª—è–µ—Ç—Å—è –¥–∞–Ω–Ω—ã–π —É–∑–µ–ª.
+			 */
+			size_t size{ 1 };
+			/**
+			 * \brief –î–∞–Ω–Ω—ã–µ, —Ö—Ä–∞–Ω—è—â–∏–µ—Å—è –≤ —É–∑–ª–µ.
 			 */
 			T data;
 
@@ -167,21 +264,31 @@ namespace custom_containers
 			Node(Node&& other) noexcept = delete;
 			Node& operator=(const Node& other) = delete;
 			Node& operator=(Node&& other) noexcept = delete;
+
+			/**
+			 * \brief –û–±–Ω–æ–≤–∏—Ç—å —Ä–∞–∑–º–µ—Ä—ã –ø–æ–¥–¥–µ—Ä–µ–≤—å–µ–≤.
+			 */
+			void refreshSizes()
+			{
+				const auto oldSize = size;
+				size = (left ? left->size : 0) + (right ? right->size : 0) + 1;
+				if (parent) parent->refreshSizes();
+			}
 		};
 
-		//Œ·˙ˇ‚ÎÂÌËˇ ÔÓÎÂÈ ÍÎ‡ÒÒ‡.
+		//–û–±—ä—è–≤–ª–µ–Ω–∏—è –ø–æ–ª–µ–π –∫–ª–∞—Å—Å–∞.
 	
 		/**
-		 * \brief ”Í‡Á‡ÚÂÎ¸ Ì‡ ÍÓÂÌ¸ ‰ÂÂ‚‡.
+		 * \brief –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ –∫–æ—Ä–µ–Ω—å –¥–µ—Ä–µ–≤–∞.
 		 */
 		Node* root_{ nullptr };
 
-		//Œ·˙ˇ‚ÎÂÌËˇ Á‡Í˚Ú˚ı ÏÂÚÓ‰Ó‚ ÍÎ‡ÒÒ‡.
+		//–û–±—ä—è–≤–ª–µ–Ω–∏—è –∑–∞–∫—Ä—ã—Ç—ã—Ö –º–µ—Ç–æ–¥–æ–≤ –∫–ª–∞—Å—Å–∞.
 	
 		/**
-		 * \brief œÓÎÛ˜ËÚ¸ ÛÁÂÎ, ÒÎÂ‰Û˛˘ËÈ (ÔÓ ‚ÂÎË˜ËÌÂ ‚ ÔÓˇ‰ÍÂ ‚ÓÁ‡ÒÚ‡ÌËˇ) Á‡ ÛÍ‡Á‡ÌÌ˚Ï.
-		 * \param currentNode ”Í‡Á‡ÚÂÎ¸ Ì‡ ÛÁÂÎ, ‰Îˇ ÍÓÚÓÓ„Ó Ë˘ÂÏ ÒÎÂ‰Û˛˘ËÈ.
-		 * \return ”Í‡Á‡ÚÂÎ¸ Ì‡ ÒÎÂ‰Û˛˘ËÈ ÛÁÂÎ.
+		 * \brief –ü–æ–ª—É—á–∏—Ç—å —É–∑–µ–ª, —Å–ª–µ–¥—É—é—â–∏–π (–ø–æ –≤–µ–ª–∏—á–∏–Ω–µ –≤ –ø–æ—Ä—è–¥–∫–µ –≤–æ–∑—Ä–∞—Å—Ç–∞–Ω–∏—è) –∑–∞ —É–∫–∞–∑–∞–Ω–Ω—ã–º.
+		 * \param currentNode –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —É–∑–µ–ª, –¥–ª—è –∫–æ—Ç–æ—Ä–æ–≥–æ –∏—â–µ–º —Å–ª–µ–¥—É—é—â–∏–π.
+		 * \return –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —Å–ª–µ–¥—É—é—â–∏–π —É–∑–µ–ª.
 		 */
 		Node* successorNode(Node* currentNode) const
 		{
@@ -201,9 +308,9 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief œÓÎÛ˜ËÚ¸ ÛÁÂÎ, ÔÂ‰¯ÂÒÚ‚Û˛˘ËÈ (ÔÓ ‚ÂÎË˜ËÌÂ ‚ ÔÓˇ‰ÍÂ ‚ÓÁ‡ÒÚ‡ÌËˇ) ÛÍ‡Á‡ÌÌÓÏÛ.
-		 * \param currentNode ”Í‡Á‡ÚÂÎ¸ Ì‡ ÛÁÂÎ, ‰Îˇ ÍÓÚÓÓ„Ó Ë˘ÂÏ ÔÂ‰¯ÂÒÚ‚Û˛˘ËÈ.
-		 * \return ”Í‡Á‡ÚÂÎ¸ Ì‡ ÔÂ‰¯ÂÒÚ‚Û˛˘ËÈ ÛÁÂÎ.
+		 * \brief –ü–æ–ª—É—á–∏—Ç—å —É–∑–µ–ª, –ø—Ä–µ–¥—à–µ—Å—Ç–≤—É—é—â–∏–π (–ø–æ –≤–µ–ª–∏—á–∏–Ω–µ –≤ –ø–æ—Ä—è–¥–∫–µ –≤–æ–∑—Ä–∞—Å—Ç–∞–Ω–∏—è) —É–∫–∞–∑–∞–Ω–Ω–æ–º—É.
+		 * \param currentNode –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —É–∑–µ–ª, –¥–ª—è –∫–æ—Ç–æ—Ä–æ–≥–æ –∏—â–µ–º –ø—Ä–µ–¥—à–µ—Å—Ç–≤—É—é—â–∏–π.
+		 * \return –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ –ø—Ä–µ–¥—à–µ—Å—Ç–≤—É—é—â–∏–π —É–∑–µ–ª.
 		 */
 		Node* predecessorNode(Node* currentNode) const
 		{
@@ -223,9 +330,9 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief œÓËÒÍ ‚ ÔÓ‰‰ÂÂ‚Â ÛÁÎ‡ Ò ÏËÌËÏ‡Î¸Ì˚Ï ÁÌ‡˜ÂÌËÂÏ. 
-		 * \param localRoot ”Í‡Á‡ÚÂÎ¸ Ì‡ ÍÓÂÌ¸ ÔÓ‰‰ÂÂ‚‡.
-		 * \return ”Í‡Á‡ÚÂÎ¸ Ì‡ ÛÁÂÎ Ò ÏËÌËÏ‡Î¸Ì˚Ï ÁÌ‡˜ÂÌËÂÏ.
+		 * \brief –ü–æ–∏—Å–∫ –≤ –ø–æ–¥–¥–µ—Ä–µ–≤–µ —É–∑–ª–∞ —Å –º–∏–Ω–∏–º–∞–ª—å–Ω—ã–º –∑–Ω–∞—á–µ–Ω–∏–µ–º. 
+		 * \param localRoot –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ –∫–æ—Ä–µ–Ω—å –ø–æ–¥–¥–µ—Ä–µ–≤–∞.
+		 * \return –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —É–∑–µ–ª —Å –º–∏–Ω–∏–º–∞–ª—å–Ω—ã–º –∑–Ω–∞—á–µ–Ω–∏–µ–º.
 		 */
 		Node* minimumNode(Node* localRoot) const
 		{
@@ -238,9 +345,9 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief œÓËÒÍ ‚ ÔÓ‰‰ÂÂ‚Â ÛÁÎ‡ Ò Ï‡ÍÒËÏ‡Î¸Ì˚Ï ÁÌ‡˜ÂÌËÂÏ.
-		 * \param localRoot ”Í‡Á‡ÚÂÎ¸ Ì‡ ÍÓÂÌ¸ ÔÓ‰‰ÂÂ‚‡.
-		 * \return ”Í‡Á‡ÚÂÎ¸ Ì‡ ÛÁÂÎ Ò Ï‡ÍÒËÏ‡Î¸Ì˚Ï ÁÌ‡˜ÂÌËÂÏ.
+		 * \brief –ü–æ–∏—Å–∫ –≤ –ø–æ–¥–¥–µ—Ä–µ–≤–µ —É–∑–ª–∞ —Å –º–∞–∫—Å–∏–º–∞–ª—å–Ω—ã–º –∑–Ω–∞—á–µ–Ω–∏–µ–º.
+		 * \param localRoot –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ –∫–æ—Ä–µ–Ω—å –ø–æ–¥–¥–µ—Ä–µ–≤–∞.
+		 * \return –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —É–∑–µ–ª —Å –º–∞–∫—Å–∏–º–∞–ª—å–Ω—ã–º –∑–Ω–∞—á–µ–Ω–∏–µ–º.
 		 */
 		Node* maximumNode(Node* localRoot) const
 		{
@@ -253,11 +360,11 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief œÓËÒÍ ‚ ‰ÂÂ‚Â ÛÁÎ‡ Ò ÛÍ‡Á‡ÌÌ˚Ï ÁÌ‡˜ÂÌËÂÏ.
-		 * \param value »ÒÍÓÏÓÂ ÁÌ‡˜ÂÌËÂ.
-		 * \return ”Í‡Á‡ÚÂÎ¸ Ì‡ ÛÁÂÎ Ò ËÒÍÓÏ˚Ï ÁÌ‡˜ÂÌËÂÏ.
+		 * \brief –ü–æ–∏—Å–∫ –≤ –¥–µ—Ä–µ–≤–µ —É–∑–ª–∞ —Å —É–∫–∞–∑–∞–Ω–Ω—ã–º –∑–Ω–∞—á–µ–Ω–∏–µ–º.
+		 * \param value –ò—Å–∫–æ–º–æ–µ –∑–Ω–∞—á–µ–Ω–∏–µ.
+		 * \return –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —É–∑–µ–ª —Å –∏—Å–∫–æ–º—ã–º –∑–Ω–∞—á–µ–Ω–∏–µ–º.
 		 */
-		Node* searchNode(const T& value) const
+		Node* searchNode(const T& value)
 		{
 			Node* searchedElement = root_;
 			while (searchedElement != nullptr)
@@ -280,8 +387,8 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief ŒÒÛ˘ÂÒÚ‚ÎˇÂÚ ÎÂ‚˚È ÔÓ‚ÓÓÚ.
-		 * \param localRoot  ÓÂÌ¸ ÔÓ‰‰ÂÂ‚‡, ÍÓÚÓÓÂ ÔÓ‚Ó‡˜Ë‚‡ÂÏ.
+		 * \brief –û—Å—É—â–µ—Å—Ç–≤–ª—è–µ—Ç –ª–µ–≤—ã–π –ø–æ–≤–æ—Ä–æ—Ç.
+		 * \param localRoot –ö–æ—Ä–µ–Ω—å –ø–æ–¥–¥–µ—Ä–µ–≤–∞, –∫–æ—Ç–æ—Ä–æ–µ –ø–æ–≤–æ—Ä–∞—á–∏–≤–∞–µ–º.
 		 */
 		void leftRotate(Node* localRoot)
 		{
@@ -297,8 +404,8 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief ŒÒÛ˘ÂÒÚ‚ÎˇÂÚ Ô‡‚˚È ÔÓ‚ÓÓÚ.
-		 * \param localRoot  ÓÂÌ¸ ÔÓ‰‰ÂÂ‚‡, ÍÓÚÓÓÂ ÔÓ‚Ó‡˜Ë‚‡ÂÏ.
+		 * \brief –û—Å—É—â–µ—Å—Ç–≤–ª—è–µ—Ç –ø—Ä–∞–≤—ã–π –ø–æ–≤–æ—Ä–æ—Ç.
+		 * \param localRoot –ö–æ—Ä–µ–Ω—å –ø–æ–¥–¥–µ—Ä–µ–≤–∞, –∫–æ—Ç–æ—Ä–æ–µ –ø–æ–≤–æ—Ä–∞—á–∏–≤–∞–µ–º.
 		 */
 		void rightRotate(Node* localRoot)
 		{
@@ -314,36 +421,42 @@ namespace custom_containers
 		}
 
 		/**
-		 * \brief «‡ÏÂÌËÚ¸ Ó‰ËÌ ÛÁÂÎ ‰Û„ËÏ.
-		 * \param oldNode ”Í‡Á‡ÚÂÎ¸ Ì‡ ÛÁÂÎ, ÍÓÚÓ˚È ÌÛÊÌÓ Á‡ÏÂÌËÚ¸. 
-		 * \param newNode ”Í‡Á‡ÚÂÎ¸ Ì‡ ÌÓ‚˚È ÛÁÂÎ. ÃÓÊÂÚ ·˚Ú¸ nullptr (ÒÚ‡˚È ÛÁÂÎ ·Û‰ÂÚ Û·‡Ì ËÁ ‰ÂÂ‚‡).
+		 * \brief –ó–∞–º–µ–Ω–∏—Ç—å –æ–¥–∏–Ω —É–∑–µ–ª –¥—Ä—É–≥–∏–º.
+		 * \param oldNode –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —É–∑–µ–ª, –∫–æ—Ç–æ—Ä—ã–π –Ω—É–∂–Ω–æ –∑–∞–º–µ–Ω–∏—Ç—å. 
+		 * \param newNode –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ –Ω–æ–≤—ã–π —É–∑–µ–ª. –ú–æ–∂–µ—Ç –±—ã—Ç—å nullptr (—Å—Ç–∞—Ä—ã–π —É–∑–µ–ª –±—É–¥–µ—Ç —É–±—Ä–∞–Ω –∏–∑ –¥–µ—Ä–µ–≤–∞).
 		 */
 		void transplant(Node* oldNode, Node* newNode)
 		{
 			if (oldNode->parent == nullptr)
 			{
-				//—Ú‡˚È ÛÁÂÎ - ÍÓÂÌ¸. 
+				//–°—Ç–∞—Ä—ã–π —É–∑–µ–ª - –∫–æ—Ä–µ–Ω—å. 
 				root_ = newNode;
 			}
 			else if (oldNode == oldNode->parent->left)
 			{
-				//—Ú‡˚È ÛÁÂÎ - ÎÂ‚˚È ÔÓÚÓÏÓÍ.
+				//–°—Ç–∞—Ä—ã–π —É–∑–µ–ª - –ª–µ–≤—ã–π –ø–æ—Ç–æ–º–æ–∫.
 				oldNode->parent->left = newNode;
 			}
 			else if (oldNode == oldNode->parent->right)
 			{
-				//—Ú‡˚È ÛÁÂÎ - Ô‡‚˚È ÔÓÚÓÏÓÍ.
+				//–°—Ç–∞—Ä—ã–π —É–∑–µ–ª - –ø—Ä–∞–≤—ã–π –ø–æ—Ç–æ–º–æ–∫.
 				oldNode->parent->right = newNode;
 			}
 			if (newNode != nullptr)
 			{
 				newNode->parent = oldNode->parent;
+				newNode->refreshSizes();
 			}
+			/*else
+			{
+				if (newNode->parent)
+					newNode->parent->refreshSizes();
+			}*/
 		}
 
 		/**
-		 * \brief œÓÏÂ˘‡ÂÚ ÛÁÂÎ ‚ ÍÓÂÌ¸ ‰ÂÂ‚‡.
-		 * \param pivotElement ”Í‡Á‡ÚÂÎ¸ Ì‡ ÛÁÂÎ, ÍÓÚÓ˚È ÌÛÊÌÓ ÔÓÏÂÒÚËÚ¸ ‚ ÍÓÂÌ¸.
+		 * \brief –ü–æ–º–µ—â–∞–µ—Ç —É–∑–µ–ª –≤ –∫–æ—Ä–µ–Ω—å –¥–µ—Ä–µ–≤–∞.
+		 * \param pivotElement –£–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —É–∑–µ–ª, –∫–æ—Ç–æ—Ä—ã–π –Ω—É–∂–Ω–æ –ø–æ–º–µ—Å—Ç–∏—Ç—å –≤ –∫–æ—Ä–µ–Ω—å.
 		 */
 		void splay(Node* pivotElement)
 		{
@@ -351,62 +464,127 @@ namespace custom_containers
 			{
 				if (pivotElement->parent == root_)
 				{
-					//Zig: ‚˚ÔÓÎÌˇÂÚÒˇ, ÍÓ„‰‡ pivotElement->parent ˇ‚ÎˇÂÚÒˇ ÍÓÌÂÏ. ƒÂÂ‚Ó ÔÓ‚Ó‡˜Ë‚‡ÂÚÒˇ ÔÓ Â·Û ÏÂÊ‰Û pivotElement Ë pivotElement->parent. 
-					//—Û˘ÂÒÚ‚ÛÂÚ ÎË¯¸ ‰Îˇ ‡Á·Ó‡ Í‡ÈÌÂ„Ó ÒÎÛ˜‡ˇ Ë ‚˚ÔÓÎÌˇÂÚÒˇ ÚÓÎ¸ÍÓ Ó‰ËÌ ‡Á ‚ ÍÓÌˆÂ, ÍÓ„‰‡ ËÁÌ‡˜‡Î¸Ì‡ˇ „ÎÛ·ËÌ‡ pivotElement ·˚Î‡ ÌÂ˜∏ÚÌ‡.
+					//Zig: –≤—ã–ø–æ–ª–Ω—è–µ—Ç—Å—è, –∫–æ–≥–¥–∞ pivotElement->parent —è–≤–ª—è–µ—Ç—Å—è –∫–æ—Ä–Ω–µ–º. –î–µ—Ä–µ–≤–æ –ø–æ–≤–æ—Ä–∞—á–∏–≤–∞–µ—Ç—Å—è –ø–æ —Ä–µ–±—Ä—É –º–µ–∂–¥—É pivotElement –∏ pivotElement->parent. 
+					//–°—É—â–µ—Å—Ç–≤—É–µ—Ç –ª–∏—à—å –¥–ª—è —Ä–∞–∑–±–æ—Ä–∞ –∫—Ä–∞–π–Ω–µ–≥–æ —Å–ª—É—á–∞—è –∏ –≤—ã–ø–æ–ª–Ω—è–µ—Ç—Å—è —Ç–æ–ª—å–∫–æ –æ–¥–∏–Ω —Ä–∞–∑ –≤ –∫–æ–Ω—Ü–µ, –∫–æ–≥–¥–∞ –∏–∑–Ω–∞—á–∞–ª—å–Ω–∞—è –≥–ª—É–±–∏–Ω–∞ pivotElement –±—ã–ª–∞ –Ω–µ—á—ë—Ç–Ω–∞.
 					if (pivotElement == pivotElement->parent->left)
 					{
-						rightRotate(pivotElement);
+						rightRotate(pivotElement->parent);
+						pivotElement->right->refreshSizes();
 					}
 					else if (pivotElement == pivotElement->parent->right)
 					{
-						leftRotate(pivotElement);
+						leftRotate(pivotElement->parent);
+						pivotElement->left->refreshSizes();
 					}
 				}
 				else
 				{
-					//Zig-Zig: ‚˚ÔÓÎÌˇÂÚÒˇ, ÍÓ„‰‡ Ë pivotElement, Ë pivotElement->parent ˇ‚Îˇ˛ÚÒˇ ÎÂ‚˚ÏË (ËÎË Ô‡‚˚ÏË) Ò˚ÌÓ‚¸ˇÏË. 
-					//ƒÂÂ‚Ó ÔÓ‚Ó‡˜Ë‚‡ÂÚÒˇ ÔÓ Â·Û ÏÂÊ‰Û pivotElement->parent->parent Ë pivotElement->parent, ‡ ÔÓÚÓÏ ó ÔÓ Â·Û ÏÂÊ‰Û pivotElement->parent Ë pivotElement.
+					//Zig-Zig: –≤—ã–ø–æ–ª–Ω—è–µ—Ç—Å—è, –∫–æ–≥–¥–∞ –∏ pivotElement, –∏ pivotElement->parent —è–≤–ª—è—é—Ç—Å—è –ª–µ–≤—ã–º–∏ (–∏–ª–∏ –ø—Ä–∞–≤—ã–º–∏) —Å—ã–Ω–æ–≤—å—è–º–∏. 
+					//–î–µ—Ä–µ–≤–æ –ø–æ–≤–æ—Ä–∞—á–∏–≤–∞–µ—Ç—Å—è –ø–æ —Ä–µ–±—Ä—É –º–µ–∂–¥—É pivotElement->parent->parent –∏ pivotElement->parent, –∞ –ø–æ—Ç–æ–º ‚Äî –ø–æ —Ä–µ–±—Ä—É –º–µ–∂–¥—É pivotElement->parent –∏ pivotElement.
 					if (pivotElement == pivotElement->parent->left &&
-						pivotElement->parent == pivotElement->parent->parent->left) {
-
+						pivotElement->parent == pivotElement->parent->parent->left) 
+					{
 						rightRotate(pivotElement->parent->parent);
 						rightRotate(pivotElement->parent);
-
+						pivotElement->right->right->refreshSizes();
 					}
 					else if (pivotElement == pivotElement->parent->right &&
-						pivotElement->parent == pivotElement->parent->parent->right) {
-
+						pivotElement->parent == pivotElement->parent->parent->right) 
+					{
 						leftRotate(pivotElement->parent->parent);
 						leftRotate(pivotElement->parent);
+						pivotElement->left->left->refreshSizes();
 					}
-					//Zig-Zag: ‚˚ÔÓÎÌˇÂÚÒˇ, ÍÓ„‰‡ pivotElement ˇ‚ÎˇÂÚÒˇ Ô‡‚˚Ï Ò˚ÌÓÏ, ‡ pivotElement->parent ó ÎÂ‚˚Ï (ËÎË Ì‡Ó·ÓÓÚ). 
-					//ƒÂÂ‚Ó ÔÓ‚Ó‡˜Ë‚‡ÂÚÒˇ ÔÓ Â·Û ÏÂÊ‰Û pivotElement->parent Ë pivotElement, ‡ Á‡ÚÂÏ ó ÔÓ Â·Û ÏÂÊ‰Û pivotElement Ë pivotElement->parent->parent.
+					//Zig-Zag: –≤—ã–ø–æ–ª–Ω—è–µ—Ç—Å—è, –∫–æ–≥–¥–∞ pivotElement —è–≤–ª—è–µ—Ç—Å—è –ø—Ä–∞–≤—ã–º —Å—ã–Ω–æ–º, –∞ pivotElement->parent ‚Äî –ª–µ–≤—ã–º (–∏–ª–∏ –Ω–∞–æ–±–æ—Ä–æ—Ç). 
+					//–î–µ—Ä–µ–≤–æ –ø–æ–≤–æ—Ä–∞—á–∏–≤–∞–µ—Ç—Å—è –ø–æ —Ä–µ–±—Ä—É –º–µ–∂–¥—É pivotElement->parent –∏ pivotElement, –∞ –∑–∞—Ç–µ–º ‚Äî –ø–æ —Ä–µ–±—Ä—É –º–µ–∂–¥—É pivotElement –∏ pivotElement->parent->parent.
 					else if (pivotElement == pivotElement->parent->right &&
-						pivotElement->parent == pivotElement->parent->parent->left) {
-
+						pivotElement->parent == pivotElement->parent->parent->left) 
+					{
 						leftRotate(pivotElement->parent);
 						rightRotate(pivotElement->parent);
+
+						pivotElement->left->refreshSizes();
+						pivotElement->right->refreshSizes();
 
 					}
 					else if (pivotElement == pivotElement->parent->left &&
-						pivotElement->parent == pivotElement->parent->parent->right) {
-
+						pivotElement->parent == pivotElement->parent->parent->right) 
+					{
 						rightRotate(pivotElement->parent);
 						leftRotate(pivotElement->parent);
+
+						pivotElement->left->refreshSizes();
+						pivotElement->right->refreshSizes();
 					}
+				}
+				if (pivotElement->parent == nullptr)
+				{
+					root_ = pivotElement;
 				}
 			}
 		}
 	};
 }
 
+/**
+ * \brief –†–µ—à–∞–µ—Ç –∑–∞–¥–∞—á—É —Å–æ–≥–ª–∞—Å–Ω–æ —É—Å–ª–æ–≤–∏—é.
+ * \param commands –ö–æ–º–∞–Ω–¥—ã –∏–∑ –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö –∫ –∑–∞–¥–∞—á–µ. 
+ */
 void processNumbers(const std::vector<std::pair<int32_t, size_t>>& commands)
 {
 	custom_containers::SplayTree<uint32_t> tree;
+	std::set<uint32_t> example;
 	for(auto& command: commands)
 	{
-		
+		if (command.first>0)
+		{
+			tree.insert(command.first);
+			example.insert(command.first);
+		}
+		else
+		{
+			tree.remove(-command.first); 
+			example.erase(-command.first);
+		}
+		std::cout << tree.searchStatistics(command.second) << " ";
 	}
+}
+
+/**
+ * \brief –ì–µ–Ω–µ—Ä–∏—Ä—É–µ—Ç —Å–ª—É—á–∞–π–Ω—ã–µ –Ω–∞–±–æ—Ä—ã –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö.
+ * \brief –ü–æ–∫—Ä—ã–≤–∞–µ—Ç –Ω–µ –≤—Å–µ –≤–æ–∑–º–æ–∂–Ω—ã–µ —Å–ª—É—á–∞–∏, –∏–Ω–æ–≥–¥–∞ –≥–µ–Ω–µ—Ä–∏—Ä—É–µ—Ç –Ω–µ–∫–æ—Ä—Ä–µ–∫—Ç–Ω—ã–µ –¥–∞–Ω–Ω—ã–µ (–≤—Å—Ç–∞–≤–∫—É –æ–¥–∏–Ω–∞–∫–æ–≤—ã—Ö —ç–ª–µ–º–µ–Ω—Ç–æ–≤).
+ * \param n –ö–æ–ª–∏—á–µ—Å—Ç–≤–æ –∫–æ–º–∞–Ω–¥ –≤–æ –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö.
+ * \return –í—Ö–æ–¥–Ω—ã–µ –∫–æ–º–∞–Ω–¥—ã.
+ */
+std::vector<std::pair<int32_t, size_t>> RandomCommands(const size_t n)
+{
+	srand(time(nullptr));
+	std::vector<std::pair<int32_t, size_t>> commands;
+	size_t last_negative=0;
+	size_t count_elements=0;
+	for (size_t i = 0; i < n; ++i)
+	{
+		if (count_elements==0)
+		{
+			count_elements += 1;
+			commands.emplace_back(rand(), 0);
+		}
+		else
+		{
+			if (rand() % 3 > 0 || count_elements < 2 || commands.size() == last_negative)
+			{
+				count_elements += 1;
+				commands.emplace_back(rand(), rand() % count_elements);
+			}
+			else
+			{
+				count_elements -= 1;
+				commands.emplace_back(-1 * commands[last_negative + rand() % (commands.size() - last_negative)].first, rand() % count_elements);
+				last_negative = commands.size();
+			}
+		}
+	}
+	return commands;
 }
 
 int main()
