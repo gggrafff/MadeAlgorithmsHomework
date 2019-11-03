@@ -8,7 +8,7 @@
 * Задача 4: https://contest.yandex.ru/contest/14768/problems/4/
 * Задача 5: 
 * Задача 6: https://contest.yandex.ru/contest/14885/problems/6_4/
-* Задача 7: 
+* Задача 7: https://contest.yandex.ru/contest/14885/problems/7_4/
 
 ## Посылки в контест
 * Задача 1: https://contest.yandex.ru/contest/14656/run-report/22581087/
@@ -16,5 +16,5 @@
 * Задача 3: https://contest.yandex.ru/contest/14768/run-report/23215882/
 * Задача 4: https://contest.yandex.ru/contest/14768/run-report/23216436/
 * Задача 5: 
-* Задача 6: https://contest.yandex.ru/contest/14885/run-report/23545709/
+* Задача 6: https://contest.yandex.ru/contest/14885/run-report/23597505/
 * Задача 7: 
