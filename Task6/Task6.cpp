@@ -89,7 +89,8 @@ namespace custom_containers
 	class BinarySearchTree
 	{
 	public:
-		explicit BinarySearchTree(T root);
+		BinarySearchTree() = default;
+		explicit BinarySearchTree(const std::function<bool(const T& lhs, const T& rhs)> less) { less_ = less; }
 		~BinarySearchTree();
 		BinarySearchTree(const BinarySearchTree& other) = delete;
 		BinarySearchTree(BinarySearchTree&& other) noexcept = delete;
@@ -109,37 +110,49 @@ namespace custom_containers
 
 	private:
 		/**
-		 * \brief Значение элемента, хранящееся в текущем узле. 
+		 * \brief Структура, описывающая узел дерева.
 		 */
-		T key_;
-		/**
-		 * \brief Указатель на левого потомка.
-		 */
-		BinarySearchTree* left_{ nullptr };
-		/**
-		 * \brief Указатель на правого потомка. 
-		 */
-		BinarySearchTree* right_{ nullptr };
-	};
+		struct Node {
+			/**
+			 * \brief Значение элемента, хранящееся в текущем узле.
+			 */
+			T key_;
+			/**
+			 * \brief Указатель на левого потомка.
+			 */
+			Node* left_{ nullptr };
+			/**
+			 * \brief Указатель на правого потомка.
+			 */
+			Node* right_{ nullptr };
 
-	template <typename T>
-	BinarySearchTree<T>::BinarySearchTree(T root)
-	{
-		key_ = root;
-	}
+			explicit Node(const T& data = T()): key_(data), left_(nullptr), right_(nullptr) {}
+			~Node()
+			{
+				delete left_;
+				delete right_;
+			}
+
+			Node(const Node& other) = delete;
+			Node(Node&& other) noexcept = delete;
+			Node& operator=(const Node& other) = delete;
+			Node& operator=(Node&& other) noexcept = delete;
+		};
+		Node* root_{ nullptr };
+		std::function<bool(const T& lhs, const T& rhs)> less_{ std::less<T>() };
+	};
 
 	template <typename T>
 	BinarySearchTree<T>::~BinarySearchTree()
 	{
-		delete left_;
-		delete right_;
+		delete root_;
 	}
 
 	template <typename T>
 	void BinarySearchTree<T>::bfs(std::function<void(const T&)> action)
 	{
-		std::queue<BinarySearchTree*> elementsForProcessing;
-		elementsForProcessing.push(this);
+		std::queue<Node*> elementsForProcessing;
+		elementsForProcessing.push(root_);
 		while (!elementsForProcessing.empty())
 		{
 			auto currentElement = elementsForProcessing.front();
@@ -159,12 +172,17 @@ namespace custom_containers
 	template <typename T>
 	void BinarySearchTree<T>::insert(const T& value)
 	{
-		BinarySearchTree* parent{nullptr};
-		BinarySearchTree* insertPlace = this;
+		if (root_ == nullptr)
+		{
+			root_ = new Node(value);
+			return;
+		}
+		Node* parent{nullptr};
+		Node* insertPlace = root_;
 		while(insertPlace!=nullptr)
 		{
 			parent = insertPlace;
-			if (value < insertPlace->key_)
+			if (less_(value, insertPlace->key_))
 			{
 				insertPlace = insertPlace->left_;
 			}
@@ -173,8 +191,8 @@ namespace custom_containers
 				insertPlace = insertPlace->right_;
 			}
 		}
-		insertPlace = new BinarySearchTree(value);
-		if (value < parent->key_)
+		insertPlace = new Node(value);
+		if (less_(value, parent->key_))
 		{
 			parent->left_ = insertPlace;
 		}
@@ -188,10 +206,10 @@ namespace custom_containers
 
 void processNumbers(const std::vector<int32_t>& numbers)
 {
-	custom_containers::BinarySearchTree<int32_t> tree(numbers.front());
-	for (size_t i = 1; i < numbers.size(); ++i)
+	custom_containers::BinarySearchTree<int32_t> tree;
+	for (int number : numbers)
 	{
-		tree.insert(numbers[i]);
+		tree.insert(number);
 	}
 	tree.bfs([](const int32_t & number) {std::cout << number << " "; });
 }
