@@ -55,7 +55,8 @@
 #include <vector>
 #include <fstream>
 #include <ctime>
-#include <set>
+#include <functional>
+
 
 namespace custom_containers
 {
@@ -64,6 +65,7 @@ namespace custom_containers
 	{
 	public:
 		SplayTree() { root_ = nullptr; }
+		SplayTree(const std::function<bool(const T& lhs, const T& rhs)> less) { less_ = less; }
 		~SplayTree() { delete root_; }
 
 		SplayTree(const SplayTree& other) = delete;
@@ -88,7 +90,7 @@ namespace custom_containers
 			Node* insertPlace = root_;
 			while (insertPlace != nullptr) {
 				parent = insertPlace;
-				if (parent->data < key)
+				if (less_(parent->data, key))
 					insertPlace = parent->right;
 				else
 					insertPlace = parent->left;
@@ -97,7 +99,7 @@ namespace custom_containers
 			//Создаём элемент и связываем создаем взаимные ссылки с родителем.
 			Node* insertElement = new Node(key);
 			insertElement->parent = parent;
-			if (insertElement->data < parent->data)
+			if (less_(insertElement->data, parent->data))
 				parent->left = insertElement;
 			else
 				parent->right = insertElement;
@@ -217,7 +219,6 @@ namespace custom_containers
 				else
 				{
 					k -= (current->left ? current->left->size : 0) + 1;
-					//if (k==0)
 					current = current->right;
 				}
 			}
@@ -282,6 +283,7 @@ namespace custom_containers
 		 * \brief Указатель на корень дерева.
 		 */
 		Node* root_{ nullptr };
+		std::function<bool(const T& lhs, const T& rhs)> less_{ std::less<T>() };
 
 		//Объявления закрытых методов класса.
 	
@@ -369,11 +371,11 @@ namespace custom_containers
 			Node* searchedElement = root_;
 			while (searchedElement != nullptr)
 			{
-				if (searchedElement->data < value)
+				if (less_(searchedElement->data, value))
 				{
 					searchedElement = searchedElement->right;
 				}
-				else if (value < searchedElement->data)
+				else if (less_(value, searchedElement->data))
 				{
 					searchedElement = searchedElement->left;
 				}
@@ -533,18 +535,15 @@ namespace custom_containers
 void processNumbers(const std::vector<std::pair<int32_t, size_t>>& commands)
 {
 	custom_containers::SplayTree<uint32_t> tree;
-	std::set<uint32_t> example;
 	for(auto& command: commands)
 	{
 		if (command.first>0)
 		{
 			tree.insert(command.first);
-			example.insert(command.first);
 		}
 		else
 		{
 			tree.remove(-command.first); 
-			example.erase(-command.first);
 		}
 		std::cout << tree.searchStatistics(command.second) << " ";
 	}
