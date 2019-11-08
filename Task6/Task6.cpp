@@ -201,6 +201,7 @@ namespace custom_containers
 		while (!elementsForProcessing.empty())
 		{
 			auto currentElement = elementsForProcessing.front();
+			elementsForProcessing.pop();
 			if (currentElement->left_ != nullptr)
 			{
 				elementsForProcessing.push(currentElement->left_);
@@ -210,7 +211,6 @@ namespace custom_containers
 				elementsForProcessing.push(currentElement->right_);
 			}
 			action(currentElement);
-			elementsForProcessing.pop();
 		}
 	}
 }
