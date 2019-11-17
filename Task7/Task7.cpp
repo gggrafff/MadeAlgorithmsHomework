@@ -64,8 +64,8 @@ namespace custom_containers
 	class SplayTree
 	{
 	public:
-		SplayTree() { root_ = nullptr; }
-		SplayTree(const std::function<bool(const T& lhs, const T& rhs)> less) { less_ = less; }
+		SplayTree(): root_(nullptr) { }
+		SplayTree(const std::function<bool(const T& lhs, const T& rhs)> less) : root_(nullptr) { less_ = less; }
 		~SplayTree() { delete root_; }
 
 		SplayTree(const SplayTree& other) = delete;
@@ -176,12 +176,10 @@ namespace custom_containers
 		 * \return Следующее значение.
 		 */
 		T successor(const T & key) {
-			if (successorNode(searchNode(key)) != nullptr) {
-				return successorNode(searchNode(key))->data;
+			if (searchNode(key)->successor() != nullptr) {
+				return searchNode(key)->successor()->data;
 			}
-			else {
-				return -1;
-			}
+			return -1;
 		}
 
 		/**
@@ -190,12 +188,10 @@ namespace custom_containers
 		 * \return Предыдущее значение.
 		 */
 		T predecessor(const T & key) {
-			if (predecessorNode(searchNode(key)) != nullptr) {
-				return predecessorNode(searchNode(key))->getValue();
+			if (searchNode(key)->predecessor() != nullptr) {
+				return searchNode(key)->predecessor()->data;
 			}
-			else {
-				return -1;
-			}
+			return -1;
 		}
 
 		/**
@@ -267,13 +263,62 @@ namespace custom_containers
 			Node& operator=(Node&& other) noexcept = delete;
 
 			/**
-			 * \brief Обновить размеры поддеревьев.
+			 * \brief Обновить размеры поддеревьев вверх по дереву.
 			 */
 			void refreshSizes()
 			{
-				const auto oldSize = size;
 				size = (left ? left->size : 0) + (right ? right->size : 0) + 1;
 				if (parent) parent->refreshSizes();
+			}
+
+			/**
+			 * \brief Обновить размер поддерева.
+			 */
+			void refreshSize()
+			{
+				size = (left ? left->size : 0) + (right ? right->size : 0) + 1;
+			}
+
+			/**
+			 * \brief Получить узел, следующий (по величине в порядке возрастания) за данным.
+			 * \return Указатель на следующий узел.
+			 */
+			Node* successor() const
+			{
+				Node* successor = this;
+				if (successor->right != nullptr)
+				{
+					successor = minimumNode(successor->right);
+				}
+				else
+				{
+					while (successor != root_ || successor != successor->parent->left)
+					{
+						successor = successor->parent;
+					}
+				}
+				return successor;
+			}
+
+			/**
+			 * \brief Получить узел, предшествующий (по величине в порядке возрастания) данному.
+			 * \return Указатель на предшествующий узел.
+			 */
+			Node* predecessorNode() const
+			{
+				Node* predecessor = this;
+				if (predecessor->left != nullptr)
+				{
+					predecessor = maximumNode(predecessor->left);
+				}
+				else
+				{
+					while (predecessor != root_ || predecessor != predecessor->parent->right)
+					{
+						predecessor = predecessor->parent;
+					}
+				}
+				return predecessor;
 			}
 		};
 
@@ -286,50 +331,6 @@ namespace custom_containers
 		std::function<bool(const T& lhs, const T& rhs)> less_{ std::less<T>() };
 
 		//Объявления закрытых методов класса.
-	
-		/**
-		 * \brief Получить узел, следующий (по величине в порядке возрастания) за указанным.
-		 * \param currentNode Указатель на узел, для которого ищем следующий.
-		 * \return Указатель на следующий узел.
-		 */
-		Node* successorNode(Node* currentNode) const
-		{
-			Node* successor = currentNode;
-			if (successor->right != nullptr)
-			{
-				successor = minimumNode(successor->right);
-			}
-			else
-			{
-				while (successor != root_ || successor != successor->parent->left)
-				{
-					successor = successor->parent;
-				}
-			}
-			return successor;
-		}
-
-		/**
-		 * \brief Получить узел, предшествующий (по величине в порядке возрастания) указанному.
-		 * \param currentNode Указатель на узел, для которого ищем предшествующий.
-		 * \return Указатель на предшествующий узел.
-		 */
-		Node* predecessorNode(Node* currentNode) const
-		{
-			Node* predecessor = currentNode;
-			if (predecessor->left != nullptr)
-			{
-				predecessor = maximumNode(predecessor->left);
-			}
-			else
-			{
-				while (predecessor != root_ || predecessor != predecessor->parent->right)
-				{
-					predecessor = predecessor->parent;
-				}
-			}
-			return predecessor;
-		}
 
 		/**
 		 * \brief Поиск в поддереве узла с минимальным значением. 
@@ -505,7 +506,7 @@ namespace custom_containers
 						leftRotate(pivotElement->parent);
 						rightRotate(pivotElement->parent);
 
-						pivotElement->left->refreshSizes();
+						pivotElement->left->refreshSize();
 						pivotElement->right->refreshSizes();
 
 					}
@@ -515,7 +516,7 @@ namespace custom_containers
 						rightRotate(pivotElement->parent);
 						leftRotate(pivotElement->parent);
 
-						pivotElement->left->refreshSizes();
+						pivotElement->left->refreshSize();
 						pivotElement->right->refreshSizes();
 					}
 				}
