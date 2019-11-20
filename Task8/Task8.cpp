@@ -2,12 +2,15 @@
 #include <vector>
 #include <functional>
 #include <fstream>
+#include <string>
+#include <cassert>
+#include <ctime>
 
 namespace custom_containers
 {
     /**
 	 * \brief Класс, реализующий хеш-таблицу открытой адресации с двойным хешированием.
-	 * \tparam T Тип элементов в хеш-таблице. Должен иметь метод data(), возвращающий указатель на данные. 
+	 * \tparam T Тип элементов в хеш-таблице. Должен иметь метод data(), возвращающий указатель на данные, и метод size(), возвращающий количество элементов. 
 	 */
 	template<typename T>
 	class HashMap
@@ -82,7 +85,7 @@ namespace custom_containers
 		{
 			explicit Node(const T& value) : key(value) {}
 			T key;
-			bool deleted{ true };
+			bool deleted{ false };
 		};
 		/**
 		 * \brief Тип, представляющий результат пробирования.
@@ -92,7 +95,7 @@ namespace custom_containers
 		//Объявления констант.
 		const size_t M = 4294967296ULL; // 2^32
 		const float CRITICAL_FULLNESS = 0.75; // 3/4
-		const float INITIAL_CAPACITY = 8;
+		const size_t INITIAL_CAPACITY = 8;
 
 		//Объявления закрытых методов класса.
 		/**
@@ -112,7 +115,7 @@ namespace custom_containers
 		 * \brief Определяем, заполнена ли таблица до критического уровня.
 		 * \return True, если заполненность достигла критического значения, иначе - false.
 		 */
-		bool isFull() const { return calculateFullness >= CRITICAL_FULLNESS; }
+		bool isFull() const { return calculateFullness() >= CRITICAL_FULLNESS; }
 
 		/**
 		 * \brief Рассчитать коэффициент заполненности хеш-таблицы.
@@ -139,17 +142,13 @@ namespace custom_containers
 
 		//Объявления полей класса.
 		/**
-		 * \brief Емкость таблицы.
-		 */
-		size_t capacity_{ 0 };
-		/**
 		 * \brief Количество элементов в таблице.
 		 */
 		size_t size_{ 0 };
 
-		std::vector<Node*> data_{ INITIAL_CAPACITY, nullptr };
-		std::function<size_t(const T&)> hash1_{ std::bind(HashMap::hash(), this, std::placeholders::_1, true) };
-		std::function<size_t(const T&)> hash2_{ std::bind(HashMap::hash(), this, std::placeholders::_1, false) };
+		std::vector<Node*> data_{ std::vector<Node*>(INITIAL_CAPACITY, nullptr) };
+		std::function<size_t(const T&)> hash1_{ std::bind(&HashMap::hash, this, std::placeholders::_1, true) };
+		std::function<size_t(const T&)> hash2_{ std::bind(&HashMap::hash, this, std::placeholders::_1, false) };
 	};
 
 	template <typename T>
@@ -184,7 +183,7 @@ namespace custom_containers
 		assert(position.second != PositionType::INVALID);
 		if (position.second == PositionType::BUSY)
 		{
-			data_[position]->deleted = true;
+			data_[position.first]->deleted = true;
 			size_ -= 1;
 			return true;
 		}
@@ -196,18 +195,14 @@ namespace custom_containers
 	{
 		auto position = probePositionsInto(key, data_);
 		assert(position.second != PositionType::INVALID);
-		if (position.second == PositionType::BUSY)
-		{
-			return true;
-		}
-		return false;
+		return static_cast<bool>(position.second == PositionType::BUSY);
 	}
 
 	template <typename T>
 	typename HashMap<T>::Position HashMap<T>::probePositionsInto(const T& key, std::vector<Node*>& data)
 	{
-		auto firstHash = hash(key);
-		auto secondHash = hash(key, false);
+		auto firstHash = hash1_(key);
+		auto secondHash = hash2_(key);
 		auto position = probe(firstHash, secondHash, 0) % data.size();
 		for (auto i = 0; i < data.size(); ++i)
 		{
@@ -215,11 +210,11 @@ namespace custom_containers
 			{
 				return {position, PositionType::FREE};
 			}
-			if (data[position]->key == key && data[position]->deleted == false)
+			if (data[position]->key == key && !data[position]->deleted)
 			{
 				return {position, PositionType::BUSY};
 			}
-			if (data[position]->deleted == true)
+			if (data[position]->deleted)
 			{
 				return {position, PositionType::DELETED};
 			}
@@ -231,14 +226,14 @@ namespace custom_containers
 	template <typename T>
 	void HashMap<T>::rehash()
 	{
-		std::vector<Node*> newData(data_.size() * 2);
-		for (auto i = 0; i < data_.size(); ++i)
+		std::vector<Node*> newData(data_.size() * 2, nullptr);
+		for (size_t i = 0; i < data_.size(); ++i)
 		{
-			if (data_[i] != nullptr && data_[i]->deleted == false)
+			if (data_[i] != nullptr && !static_cast<bool>(data_[i]->deleted))
 			{
 				auto position = probePositionsInto(data_[i]->key, newData);
 				assert(position.second == PositionType::FREE);
-				newData[position.first] = data_[i]->key;
+				newData[position.first] = new Node(data_[i]->key);
 			}
 		}
 		data_ = newData;
@@ -247,18 +242,22 @@ namespace custom_containers
 	template <typename T>
 	float HashMap<T>::calculateFullness() const
 	{
-		return static_cast<float>(size_) / static_cast<float>(capacity_);
+		return static_cast<float>(size_) / static_cast<float>(data_.size());
 	}
 
 	template <typename T>
 	size_t HashMap<T>::hash(const T& key, bool isMainHash) const
 	{
-		static const size_t a = isMainHash ? 5 : 7;
-		auto bytes_string = reinterpret_cast<char*>(key.data());
+		const auto a = isMainHash ? 5 : 7;
+		auto bytes_string = reinterpret_cast<const char*>(key.data());
 		size_t hash = 0;
-		for (size_t i = 0; i < sizeof(key); ++i)
+		for (size_t i = 0; i < key.size(); ++i)
 		{
 			hash = (hash * a + *bytes_string++) % M;
+		}
+		if (!isMainHash && hash % 2 == 0)
+		{
+			hash -= 1;
 		}
 		return hash;
 	}
@@ -270,9 +269,58 @@ namespace custom_containers
 	}
 }
 
-void processCommands(const std::vector<std::pair<char, std::string>>& commands)
+void processCommands(const std::vector<std::pair<std::string, std::string>>& commands)
 {
-	
+	custom_containers::HashMap<std::string> hashMap;
+	for(auto& command: commands)
+	{
+		auto result = false;
+		if(command.first == "+")
+		{
+			result = hashMap.insert(command.second);
+		}
+		else if (command.first == "?")
+		{
+			result = hashMap.contains(command.second);
+		}
+		else if (command.first == "-")
+		{
+			result = hashMap.remove(command.second);
+		}
+		if (result)
+		{
+			std::cout << "OK" << std::endl;
+		}
+		else
+		{
+			std::cout << "FAIL" << std::endl;
+		}
+	}
+}
+
+std::vector<std::pair<std::string, std::string>> generateRandomCommands()
+{
+	srand(time(nullptr));
+	std::vector<std::pair<std::string, std::string>> commands;
+	for(auto i = 0; i<600;++i)
+	{
+		const auto operation_number = rand() % 3;
+		std::string operation = "+";
+		if(operation_number == 1)
+		{
+			operation = "-";
+		} else if (operation_number == 2)
+		{
+			operation = "?";
+		}
+		std::string str;
+		for(auto j=0;j<2;++j)
+		{
+			str += 'a' + rand() % ('d' - 'a');
+		}
+		commands.emplace_back(operation, str);
+	}
+	return commands;
 }
 
 
@@ -287,13 +335,20 @@ int main()
 	{
 		return 1;
 	}
-	std::vector<std::pair<char, std::string>> commands;
-	/*while(!in.eof())
+	std::vector<std::pair<std::string, std::string>> commands;
+	while(!in.eof())
 	{
-		char operation{ '+' };
+		std::string operation;
 		std::string key;
 		in >> operation;
-		in.;
-	}*/
-	
+		if (operation.empty())
+		{
+			break;
+		}
+		in >> key;
+		commands.emplace_back(operation, key);
+	}
+	//commands = generateRandomCommands();
+	processCommands(commands);
+	return 0;
 }
