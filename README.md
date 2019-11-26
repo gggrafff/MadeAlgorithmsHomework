@@ -6,9 +6,13 @@
 * Задача 2: https://contest.yandex.ru/contest/14656/problems/2_1/
 * Задача 3: https://contest.yandex.ru/contest/14768/problems/3_3/
 * Задача 4: https://contest.yandex.ru/contest/14768/problems/4/
-* Задача 5: 
+* Задача 5: Соревнование по сортировке
 * Задача 6: https://contest.yandex.ru/contest/14885/problems/6_4/
 * Задача 7: https://contest.yandex.ru/contest/14885/problems/7_4/
+* Задача 8: https://contest.yandex.ru/contest/15369/problems/8/
+* Задача 9: 
+* Задача 10: Соревнование по сжатию
+* Задача 11: 
 
 ## Посылки в контест
 * Задача 1: https://contest.yandex.ru/contest/14656/run-report/22581087/
@@ -17,4 +21,8 @@
 * Задача 4: https://contest.yandex.ru/contest/14768/run-report/23216436/
 * Задача 5: 
 * Задача 6: https://contest.yandex.ru/contest/14885/run-report/23597505/
-* Задача 7: 
+* Задача 7: https://contest.yandex.ru/contest/14885/run-report/23609421/
+* Задача 8: https://contest.yandex.ru/contest/15369/run-report/26512407/
+* Задача 9: 
+* Задача 10: Соревнование по сжатию
+* Задача 11: 
