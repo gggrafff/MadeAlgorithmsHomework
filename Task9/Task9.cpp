@@ -139,17 +139,14 @@ namespace custom_containers {
       }
       else {
         code = getNytCode();
-        std::vector<bool> mainCode;
         for (auto i = 0; i < 8; ++i) {
           if (static_cast<bool>((value >> i) & 1)) {
-            mainCode.push_back(true);
+			  code.push_back(true);
           }
           else {
-            mainCode.push_back(false);
+			  code.push_back(false);
           }
         }
-        std::reverse(mainCode.begin(), mainCode.end());
-        code.insert(code.end(), mainCode.begin(), mainCode.end());
       }
 
       return code;
@@ -183,13 +180,38 @@ namespace custom_containers {
         return { 0, 0 };
       }
       byte value = 0;
-      std::vector<bool> reversedCode(code.begin() + index, code.begin() + index + 8);
-      std::reverse(reversedCode.begin(), reversedCode.end());
-      for (size_t i = 0; i < reversedCode.size(); ++i) {
-        value |= static_cast<byte>(reversedCode[i]) << (i);
+      for (size_t i = 0; i < 8; ++i) {
+        value |= static_cast<byte>(code[index + i]) << (i);
       }
       return {value, index + 8};
     }
+
+	std::tuple<byte, size_t> getValue(std::vector<bool>::const_iterator begin_code, const std::vector<bool>::const_iterator end_code) {
+		size_t current = 0;
+		size_t index = 0;
+		while (!data_[current].isLeaf()) {
+			assert(begin_code != end_code);
+			if (*begin_code) {
+				current = data_[current].rightChild;
+			}
+			else {
+				current = data_[current].leftChild;
+			}
+			std::advance(begin_code, 1);
+			index++;
+		}
+		if (!data_[current].isNyt()) {
+			return { data_[current].value, index };
+		}
+		if (std::distance(begin_code, end_code) < 8) {
+			return { 0, 0 };
+		}
+		byte value = 0;
+		for (size_t i = 0; i < 8; ++i) {
+			value |= static_cast<byte>(*next(begin_code, i)) << (i);
+		}
+		return { value, index + 8 };
+	}
 
 
     std::tuple<byte, size_t> decode(const std::vector<bool>& code) {
@@ -200,6 +222,15 @@ namespace custom_containers {
       assert(usedBytes_[value].first);
       return {value, shift};
     }
+
+	std::tuple<byte, size_t> decode(const std::vector<bool>::const_iterator begin_code, const std::vector<bool>::const_iterator end_code) {
+		byte value{ 0 };
+		size_t shift{ 0 };
+		std::tie(value, shift) = getValue(begin_code, end_code);
+		insert(value);
+		assert(usedBytes_[value].first);
+		return { value, shift };
+	}
 
 
     friend bool operator==(const CodeTree& lhs, const CodeTree& rhs) {
@@ -347,14 +378,15 @@ namespace custom_algorithms {
 
     byte Pop(const bool force=false) {
       std::vector<bool> code;
-      if (buffer_.size() > 8) {
-        code = std::vector<bool>(buffer_.begin(), buffer_.begin() + 8);
-        buffer_.erase(buffer_.begin(), buffer_.begin() + 8);
+      if (buffer_.size() - buffer_cursor_ > 8) {
+        code = std::vector<bool>(std::next(buffer_.begin(), buffer_cursor_), std::next(buffer_.begin(), buffer_cursor_+8));
+		buffer_cursor_ += 8;
         std::reverse(code.begin(), code.end());
       }
       else if (force){
-        code = std::vector<bool>(buffer_.begin(), buffer_.end());
-        buffer_.erase(buffer_.begin(), buffer_.end());
+        code = std::vector<bool>(std::next(buffer_.begin(), buffer_cursor_), buffer_.end());
+		buffer_.clear();
+		buffer_cursor_ = 0;
         while(code.size()<8) {
           code.push_back(false);
         }
@@ -370,12 +402,11 @@ namespace custom_algorithms {
     void Eof() {
       auto code = code_tree_.getNytCode();
       buffer_.insert(buffer_.end(), code.begin(), code.end());
-      //code = code_tree_.getEOFCode();
-      //buffer_.insert(buffer_.end(), code.begin(), code.end());
     }
 
   private:
     std::vector<bool> buffer_;
+	size_t buffer_cursor_{0};
     custom_containers::CodeTree code_tree_;
   };
 
@@ -406,12 +437,13 @@ namespace custom_algorithms {
     byte Pop() {
 		byte value{ 0 };
 		size_t shift{ 0 };
-		std::tie(value, shift) = code_tree_.decode(buffer_);
+		std::tie(value, shift) = code_tree_.decode(std::next(buffer_.begin(), buffer_cursor_), buffer_.end());
       if (shift==0) {
         buffer_.clear();
+		buffer_cursor_ = 0;
         return 0;
       }
-      buffer_.erase(buffer_.begin(), buffer_.begin() + shift);
+      buffer_cursor_ += shift;
       return value;
     }
 
@@ -421,6 +453,7 @@ namespace custom_algorithms {
 
   private:
     std::vector<bool> buffer_;
+	size_t buffer_cursor_{ 0 };
     custom_containers::CodeTree code_tree_;
     bool eof_ = false;
   };
