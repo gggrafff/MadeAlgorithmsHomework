@@ -1,4 +1,70 @@
-//Huffman
+/*
+ * Задача 9. Алгоритм сжатия данных Хаффмана (15 баллов)
+ * Реализуйте алгоритм построения оптимального префиксного кода Хаффмана. 
+ * При помощи алгоритма реализуйте две функции для создания архива из одного файла и извлечения файла из архива.
+ *
+ *
+ * // Метод архивирует данные из потока original
+ * void Encode(IInputStream& original, IOutputStream& compressed);
+ * // Метод восстанавливает оригинальные данные
+ * void Decode(IInputStream& compressed, IOutputStream& original);
+ * где:
+ * typedef unsigned char byte;
+ *
+ * struct IInputStream {
+ * 	// Возвращает false, если поток закончился
+ * 	bool Read(byte& value) = 0;
+ * };
+ *
+ * struct IOutputStream {
+ * 	void Write(byte value) = 0;
+ * };
+ *
+ * В контест необходимо отправить .cpp файл содержащий функции Encode, Decode, а также включающий файл Huffman.h. Тестирующая программа выводит скоринг зависящий от соотношения размера сжатого файла и исходного.
+ *
+ * Пример минимального решения:
+ * #include "Huffman.h"
+ *
+ * static void copyStream(IInputStream& input, IOutputStream& output)
+ * {
+ * 	byte value;
+ * 	while (input.Read(value))
+ * 	{
+ * 		output.Write(value);
+ * 	}
+ * }
+ *
+ * void Encode(IInputStream& original, IOutputStream& compressed)
+ * {
+ * 	copyStream(original, compressed);
+ * }
+ *
+ * void Decode(IInputStream& compressed, IOutputStream& original)
+ * {
+ * 	copyStream(compressed, original);
+ * }
+ * 
+ */
+
+/*
+ * Появилось желание сделать не простой алгоритм кодирования Хаффмана, а адаптивный.
+ * 
+ * Что почитать?
+ * Общие сведения: 
+ * https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%B4_%D0%A5%D0%B0%D1%84%D1%84%D0%BC%D0%B0%D0%BD%D0%B0
+ * https://ru.wikipedia.org/wiki/%D0%90%D0%B4%D0%B0%D0%BF%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B9_%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%A5%D0%B0%D1%84%D1%84%D0%BC%D0%B0%D0%BD%D0%B0
+ * Чуть подробнее:
+ * https://mf.grsu.by/UchProc/livak/po/comprsite/theory_huffman.html
+ * https://mf.grsu.by/UchProc/livak/po/comprsite/theory_huffman_adapt.html
+ * Достаточно подробно, чтобы реализовать алгоритм:
+ * https://www2.cs.duke.edu/csed/curious/compression/adaptivehuff.html
+ * 
+ * Идеи по улучшению кода:
+ * Можно сделать возможность фиксировать дерево и кодировать без перестройки дерева, т.е. 
+ * сделать возможность использовать неадаптивный алгоритм, но для этого нужно передать само дерево вместе с сообщением.
+ * Это может дать лучше результаты на маленьких текстах.
+ * 
+ */
 
 #include "Huffman.h"
 #include <vector>
