@@ -11,84 +11,103 @@ namespace  custom_containers {
 }
 
 namespace custom_algorithms {
-  void bfs(
+	/**
+   * \brief Обход невзвешенного графа в ширину. 
+   * \param graph Список смежности невзвешенного графа.
+   * \param start Индекс узла, с которого начинаем обход.
+   * \param action Действие, которое необходимо произвести с текущим узлом.
+   * \param stop_condition Условие остановки обхода.
+   */
+  void Bfs(
     const custom_containers::UnweighedGraph& graph,
     const size_t start, 
-    const std::function<void(const size_t currentElement, const std::vector<bool>& visited)>& action,
-    const std::function<bool(const size_t currentElement)>& stopCondition) {
-    std::queue<size_t> elementsForProcessing;
+    const std::function<void(const size_t current_element, const std::vector<bool>& visited)>& action,
+    const std::function<bool(const size_t current_element)>& stop_condition) {
+    std::queue<size_t> elements_for_processing;
     std::vector<bool> visited(graph.size(), false);
-    elementsForProcessing.push(start);
+    elements_for_processing.push(start);
     visited[start] = true;
 
-    while (!elementsForProcessing.empty()) {
-      const auto currentElement = elementsForProcessing.front();
-      elementsForProcessing.pop();
+    while (!elements_for_processing.empty()) {
+      const auto current_element = elements_for_processing.front();
+      elements_for_processing.pop();
 
-      action(currentElement, visited);
-      if (stopCondition(currentElement)) {
+      action(current_element, visited);
+      if (stop_condition(current_element)) {
         break;
       }
 
-      for(auto& node: graph[currentElement]) {
+      for(auto& node: graph[current_element]) {
         if (!visited[node]) {
-          elementsForProcessing.push(node);
+          elements_for_processing.push(node);
           visited[node] = true;
         }
       }
     }
   }
 
-
-  std::vector<size_t> findPathInUnweighedGraph(
+	/**
+   * \brief Поиск кратчайшего пути между вершинами в невзвешенном графе. 
+   * \param graph Список смежности невзвешенного графа.
+   * \param start Вершина, из которой ищем путь.
+   * \param finish Вершина, в которую ищем путь.
+   * \return Массив индексов узлов, через которые прошёл путь.
+   */
+  std::vector<size_t> FindPathInUnweighedGraph(
     const custom_containers::UnweighedGraph& graph,
     const size_t start,
     const size_t finish) {
     std::vector<size_t> parents(graph.size(), 0);
 
-    bfs(
+    Bfs(
       graph, 
       start,
-      [&graph, &parents, start](const size_t currentElement, const std::vector<bool> & visited) {
-        for (auto& node : graph[currentElement]) {
-          if (!visited[node] && node != start && node!=currentElement) {
-            parents[node] = currentElement;
+      [&graph, &parents, start](const size_t current_element, const std::vector<bool> & visited) {
+        for (auto& node : graph[current_element]) {
+          if (!visited[node] && node != start && node!=current_element) {
+            parents[node] = current_element;
           }
         }
       },
-      [finish](const size_t currentElement) {
-        return currentElement == finish;
+      [finish](const size_t current_element) {
+        return current_element == finish;
       });
 
     std::vector<size_t> path;
-    auto currentElement = finish;
-    while(parents[currentElement]!=currentElement) {
-      path.push_back(parents[currentElement]);
-      currentElement = parents[currentElement];
+    auto current_element = finish;
+    while(parents[current_element]!=current_element) {
+      path.push_back(parents[current_element]);
+      current_element = parents[current_element];
     }
     std::reverse(path.begin(), path.end());
     return path;
   }
 
-
-  size_t findNumberPathsInUnweighedGraph(
+	/**
+   * \brief Поиск количества кратчайших путей между двумя вершинами в невзвешенном графе.
+   * \param graph Список смежности невзвешенного графа.
+   * \param start  Вершина, из которой ищем пути.
+   * \param finish Вершина, в которую ищем пути.
+   * \return Количество кратчайших путей.
+   */
+  size_t FindNumberPathsInUnweighedGraph(
     const custom_containers::UnweighedGraph& graph,
     const size_t start,
     const size_t finish) {
-    std::vector<size_t> pathsCounts(graph.size(), 0);
+    std::vector<size_t> paths_counts(graph.size(), 0);
     std::vector<size_t> distances(graph.size(), 0);
-	pathsCounts[start] = 1;
-    bfs(
+	paths_counts[start] = 1;
+    Bfs(
       graph, 
       start, 
-      [&graph, &distances, &pathsCounts](const size_t currentElement, const std::vector<bool> & visited) {
-        for (auto& node : graph[currentElement]) {
+      [&graph, &distances, &paths_counts](const size_t current_element, const std::vector<bool> & visited) {
+        for (auto& node : graph[current_element]) {
           if (!visited[node]) {
-            distances[node] = distances[currentElement] + 1;
-            pathsCounts[node] += pathsCounts[currentElement];
+            distances[node] = distances[current_element] + 1;
+            paths_counts[node] += paths_counts[current_element];
           }
-          else if(distances[node] == distances[currentElement] + 1) {
-            pathsCounts[node] += pathsCounts[currentElement];
+          else if(distances[node] == distances[current_element] + 1) {
+            paths_counts[node] += paths_counts[current_element];
           }
         }
       },
@@ -96,7 +115,7 @@ namespace custom_algorithms {
         return false;
     });
 
-    return pathsCounts[finish];
+    return paths_counts[finish];
   }
 }
 
@@ -121,7 +140,7 @@ int main(int argc, char* argv[]) {
   size_t start{ 0 };
   size_t finish{ 0 };
   in >> start >> finish;
-  const size_t numberPaths = custom_algorithms::findNumberPathsInUnweighedGraph(graph, start, finish);
-  std::cout << numberPaths;
+  const auto number_paths = custom_algorithms::FindNumberPathsInUnweighedGraph(graph, start, finish);
+  std::cout << number_paths;
   return 0;
 }
