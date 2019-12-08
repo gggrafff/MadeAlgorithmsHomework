@@ -63,6 +63,7 @@
  * Можно сделать возможность фиксировать дерево и кодировать без перестройки дерева, т.е. 
  * сделать возможность использовать неадаптивный алгоритм, но для этого нужно передать само дерево вместе с сообщением.
  * Это может дать лучше результаты на маленьких текстах.
+ * Тексты с равновероятными символами выгоднее передавать без кодирования.
  * 
  */
 
@@ -75,32 +76,44 @@
 #include <tuple>
 
 namespace custom_containers {
+	/**
+   * \brief Кодовое дерево.
+   * \details ==========
+   * \details Определение. Упорядоченное Дерево.
+   * \details Будем говорить, что дерево обладает свойством упорядоченности, если его узлы могут быть перечислены в порядке возрастания веса и 
+   * \details в этом перечислении каждый узел находится рядом со своим братом. 
+   * \details Теорема. Двоичное дерево является деревом кодирования Хаффмана тогда и только тогда, когда оно удовлетворяет свойству упорядоченности. 
+   * \details Сохранение свойства упорядоченности в процессе обновления дерева позволяет нам быть уверенным в том, что двоичное дерево, 
+   * \details с которым мы работаем, – это дерево кодирования Хаффмана и до, и после обновления веса у листьев дерева. 
+   */
   class CodeTree {
-    /*
-     * Упорядоченное Дерево
-     * Будем говорить, что дерево обладает свойством упорядоченности, если его узлы могут быть перечислены в порядке возрастания веса и в этом перечислении каждый узел находится рядом со своим братом. 
-     */
   public:
     CodeTree() {
       data_.emplace_back();
     }
 
-
-    void insert(const byte value) {
-      /*
-       * Для каждого передающегося символа передатчик и приёмник выполняют процедуру обновления:
-       *	Если текущий символ является не встречавшимся — добавить к NYT два дочерних узла: один для следующего NYT, другой для символа. Увеличить вес нового листа и старого NYT и переходить к шагу 4. Если текущий символ является не NYT, перейти к листу символа.
-       *	Если этот узел не имеет наибольший вес в блоке, поменять его с узлом, имеющим наибольшее число, за исключением, если этот узел является родительским элементом[3]
-       *	Увеличение веса для текущего узла
-       *	Если это не корневой узел зайти в родительский узел затем перейдите к шагу 2. Если это корень, окончание.
-       */
+	  /**
+     * \brief Вставка символа в дерево или увеличение веса имеющегося символа.
+     * \details ==========
+     * \details Набор узлов с одинаковыми весами назовём блоком.
+     * \details В этом алгоритме используется специальный лист (узел без потомков), NYT (от англ. not yet transmitted — ещё не переданный символ), 
+     * \details из которого «растут» новые, ранее не встречавшиеся, символы.
+     * \details ==========
+     * \details Для каждого передающегося символа передатчик и приёмник выполняют процедуру обновления:
+     * \details 1. Если текущий символ является не встречавшимся — добавить к NYT два дочерних узла: один для следующего NYT, другой для символа. Увеличить вес нового листа и старого NYT и переходить к шагу 4. Если текущий символ является не NYT, перейти к листу символа.
+     * \details 2. Если этот узел не имеет наибольший вес в блоке, поменять его с узлом, имеющим наибольшее число, за исключением, если этот узел является родительским элементом.
+     * \details 3. Увеличение веса для текущего узла.
+     * \details 4. Если это не корневой узел зайти в родительский узел затем перейдите к шагу 2. Если это корень, окончание.
+     * \param value Вставляемый символ.
+     */
+    void Insert(const byte value) {
       size_t current = 0;
-      if (usedBytes_[value].first) {
+      if (used_bytes_[value].first) {
         while (data_[current].value != value) {
           current += 1;
         }
         data_[current].weight += 1;
-        current = repairSortingForElement(current);
+        current = RepairSortingForElement(current);
       }
       else {
         data_.emplace_back();
@@ -112,13 +125,13 @@ namespace custom_containers {
         data_[data_.size() - 2].parent = data_.size() - 3;
         data_[data_.size() - 2].weight += 1;
 
-        data_[data_.size() - 3].leftChild = data_.size() - 1;
-        data_[data_.size() - 3].rightChild = data_.size() - 2;
+        data_[data_.size() - 3].left_child = data_.size() - 1;
+        data_[data_.size() - 3].right_child = data_.size() - 2;
 
         current = data_.size() - 2;
 
-        usedBytes_[value].first = true;
-        usedBytes_[value].second = current;
+        used_bytes_[value].first = true;
+        used_bytes_[value].second = current;
       }
 
       while (data_[current].parent != current) {
@@ -127,24 +140,27 @@ namespace custom_containers {
         if (data_[current].parent == current) {
           break;
         }
-        current = repairSortingForElement(current);
+        current = RepairSortingForElement(current);
       }
-      assert(isSortedTree());
+      assert(IsSortedTree());
     }
 
-
-    bool isSortedTree() {
+	  /**
+     * \brief Функция проверки того, что дерево удовлетворяет свойству упорядоченности. Используется для отладки работы дерева. 
+     * \return true - если дерево упорядочено, иначе - false.
+     */
+    bool IsSortedTree() {
       if (data_.size() <= 1)
         return true;
       for (size_t i = 1; i < data_.size(); ++i) {
-        if (data_[i].leftChild != 0 || data_[i].rightChild != 0) {
+        if (data_[i].left_child != 0 || data_[i].right_child != 0) {
           //У каждого узла есть родной брат
-          if (!(data_[i].leftChild != 0 && data_[i].rightChild != 0)) {
+          if (!(data_[i].left_child != 0 && data_[i].right_child != 0)) {
             return false;
           }
           //Вес промежуточного узла равен сумме весов детей
-          if (data_[i].weight != data_[data_[i].leftChild].weight + data_[data_[
-            i].rightChild].weight) {
+          if (data_[i].weight != data_[data_[i].left_child].weight + data_[data_[
+            i].right_child].weight) {
             return false;
           }
         }
@@ -152,12 +168,12 @@ namespace custom_containers {
         if (data_[i].weight > data_[i - 1].weight) {
           return false;
         }
-        if (!data_[i].isNyt() && data_[i].isLeaf()) {
+        if (!data_[i].IsNyt() && data_[i].IsLeaf()) {
           //Листы содержат символ
-          if (!usedBytes_[data_[i].value].first)
+          if (!used_bytes_[data_[i].value].first)
             return false;
           //Информация о позиции узла верная
-          if (usedBytes_[data_[i].value].second != i)
+          if (used_bytes_[data_[i].value].second != i)
             return false;
         }
 
@@ -165,17 +181,23 @@ namespace custom_containers {
       return true;
     }
 
-
-	static std::vector<bool> getEOFCode() {
+	  /**
+	 * \brief Формирует символ конца файла (не обязательно использовать - зависит от задачи).
+	 * \return Массив бит, соответствующий символу конца файла.
+	 */
+	static std::vector<bool> GetEofCode() {
       return std::vector<bool>(9, false);
     }
 
-
-    std::vector<bool> getNytCode() {
+	  /**
+     * \brief Формирует код NYT-символа (передаётся перед символом, который встретился впервые).
+     * \return Массив бит, соответствующий символу NYT.
+     */
+    std::vector<bool> GetNytCode() {
       std::vector<bool> code;
       auto current = data_.size() - 1;
-      while (!isRoot(current)) {
-        if (isLeftChild(current)) {
+      while (!IsRoot(current)) {
+        if (IsLeftChild(current)) {
           code.push_back(false);
         }
         else {
@@ -187,13 +209,18 @@ namespace custom_containers {
       return code;
     }
 
-
-    std::vector<bool> getCode(const byte value) {
+	  /**
+     * \brief Формирует код символа.
+     * \param value Символ, для которого нужно сформировать код.
+     * \return Массив бит, соответствующий коду переданного символа.
+     */
+    std::vector<bool> GetCode(const byte value) {
       std::vector<bool> code;
-      if (usedBytes_[value].first) {
-        auto current = usedBytes_[value].second;
-        while (!isRoot(current)) {
-          if (isLeftChild(current)) {
+      if (used_bytes_[value].first) {
+		//Если символ встречался, то проходим по дереву, формируя код. 
+        auto current = used_bytes_[value].second;
+        while (!IsRoot(current)) {
+          if (IsLeftChild(current)) {
             code.push_back(false);
           }
           else {
@@ -204,7 +231,8 @@ namespace custom_containers {
         std::reverse(code.begin(), code.end());
       }
       else {
-        code = getNytCode();
+		//Если символ встречался, то проходим по дереву, формируя код. 
+        code = GetNytCode();
         for (auto i = 0; i < 8; ++i) {
           if (static_cast<bool>((value >> i) & 1)) {
 			  code.push_back(true);
@@ -218,28 +246,36 @@ namespace custom_containers {
       return code;
     }
 
-
-    std::vector<bool> encode(const byte value) {
-      auto code = getCode(value);
-      insert(value);
-      assert(usedBytes_[value].first);
+	  /**
+     * \brief Закодировать символ и увеличить его вес в дереве.
+     * \param value Символ, для которого нужно сформировать код.
+     * \return Массив бит, соответствующий коду переданного символа.
+     */
+    std::vector<bool> Encode(const byte value) {
+      auto code = GetCode(value);
+      Insert(value);
+      assert(used_bytes_[value].first);
       return code;
     }
 
-
-    std::tuple<byte, size_t> getValue(const std::vector<bool>& code) {
+	  /**
+     * \brief Формирует символ по его коду.
+     * \param code Массив бит, соответствующий коду символа.
+     * \return Символ, код которого был передан.
+     */
+    std::tuple<byte, size_t> GetValue(const std::vector<bool>& code) {
       size_t current = 0;
       size_t index = 0;
-      while (!data_[current].isLeaf()) {
+      while (!data_[current].IsLeaf()) {
         assert(index < code.size());
         if (code[index++]) {
-          current = data_[current].rightChild;
+          current = data_[current].right_child;
         }
         else {
-          current = data_[current].leftChild;
+          current = data_[current].left_child;
         }
       }
-      if (!data_[current].isNyt()) {
+      if (!data_[current].IsNyt()) {
         return {data_[current].value, index};
       }
       if (code.size()<index+8) {
@@ -252,21 +288,27 @@ namespace custom_containers {
       return {value, index + 8};
     }
 
-	std::tuple<byte, size_t> getValue(std::vector<bool>::const_iterator begin_code, const std::vector<bool>::const_iterator end_code) {
+	  /**
+	 * \brief Формирует символ по его коду.
+	 * \param begin_code Итератор, указывающий на начало кода символа. 
+	 * \param end_code Итератор, указывающий на конец кода символа. 
+	 * \return Символ, код которого был передан.
+	 */
+	std::tuple<byte, size_t> GetValue(std::vector<bool>::const_iterator begin_code, const std::vector<bool>::const_iterator end_code) {
 		size_t current = 0;
 		size_t index = 0;
-		while (!data_[current].isLeaf()) {
+		while (!data_[current].IsLeaf()) {
 			assert(begin_code != end_code);
 			if (*begin_code) {
-				current = data_[current].rightChild;
+				current = data_[current].right_child;
 			}
 			else {
-				current = data_[current].leftChild;
+				current = data_[current].left_child;
 			}
 			std::advance(begin_code, 1);
 			index++;
 		}
-		if (!data_[current].isNyt()) {
+		if (!data_[current].IsNyt()) {
 			return { data_[current].value, index };
 		}
 		if (std::distance(begin_code, end_code) < 8) {
@@ -279,29 +321,39 @@ namespace custom_containers {
 		return { value, index + 8 };
 	}
 
-
-    std::tuple<byte, size_t> decode(const std::vector<bool>& code) {
+	  /**
+     * \brief Раскодировать символ и увеличить вес в дереве.
+     * \param code Массив бит с кодом символа.
+     * \return Символ, код которого был передан.
+     */
+    std::tuple<byte, size_t> Decode(const std::vector<bool>& code) {
 	  byte value{ 0 };
 	  size_t shift{ 0 };
-      std::tie(value, shift) = getValue(code);
-      insert(value);
-      assert(usedBytes_[value].first);
+      std::tie(value, shift) = GetValue(code);
+      Insert(value);
+      assert(used_bytes_[value].first);
       return {value, shift};
     }
 
-	std::tuple<byte, size_t> decode(const std::vector<bool>::const_iterator begin_code, const std::vector<bool>::const_iterator end_code) {
+	  /**
+	 * \brief Раскодировать символ и увеличить вес в дереве.
+	 * \param begin_code Итератор, указывающий на начало кода символа. 
+	 * \param end_code Итератор, указывающий на конец кода символа. 
+	 * \return Символ, код которого был передан.
+	 */
+	std::tuple<byte, size_t> Decode(const std::vector<bool>::const_iterator begin_code, const std::vector<bool>::const_iterator end_code) {
 		byte value{ 0 };
 		size_t shift{ 0 };
-		std::tie(value, shift) = getValue(begin_code, end_code);
-		insert(value);
-		assert(usedBytes_[value].first);
+		std::tie(value, shift) = GetValue(begin_code, end_code);
+		Insert(value);
+		assert(used_bytes_[value].first);
 		return { value, shift };
 	}
 
 
     friend bool operator==(const CodeTree& lhs, const CodeTree& rhs) {
       return lhs.data_ == rhs.data_
-        && lhs.usedBytes_ == rhs.usedBytes_;
+        && lhs.used_bytes_ == rhs.used_bytes_;
     }
 
 
@@ -311,38 +363,44 @@ namespace custom_containers {
 
 
   private:
+	  /**
+     * \brief Узел кодового дерева.
+     */
     struct Node {
       size_t parent{0};
-      size_t leftChild{0};
-      size_t rightChild{0};
+      size_t left_child{0};
+      size_t right_child{0};
       size_t weight{0};
       byte value{0};
 
 
-      [[nodiscard]] bool isLeaf() const {
-        return leftChild == 0 && rightChild == 0;
+      [[nodiscard]] bool IsLeaf() const {
+        return left_child == 0 && right_child == 0;
       }
 
-
-      [[nodiscard]] bool isNyt() const {
-        return isLeaf() && weight == 0;
+      [[nodiscard]] bool IsNyt() const {
+        return IsLeaf() && weight == 0;
       }
 
-
-      void changeChild(size_t oldChild, size_t newChild) {
-        if (leftChild == oldChild) {
-          leftChild = newChild;
+	    /**
+       * \brief Заменить потомка узла.
+       * \param old_child Индекс старого потомка.
+       * \param new_child Индекс нового потомка.
+       */
+      void ChangeChild(const size_t old_child, const size_t new_child) {
+        if (left_child == old_child) {
+          left_child = new_child;
         }
-        else if (rightChild == oldChild) {
-          rightChild = newChild;
+        else if (right_child == old_child) {
+          right_child = new_child;
         }
       }
 
 
       friend bool operator==(const Node& lhs, const Node& rhs) {
         return lhs.parent == rhs.parent
-          && lhs.leftChild == rhs.leftChild
-          && lhs.rightChild == rhs.rightChild
+          && lhs.left_child == rhs.left_child
+          && lhs.right_child == rhs.right_child
           && lhs.weight == rhs.weight
           && lhs.value == rhs.value;
       }
@@ -354,48 +412,55 @@ namespace custom_containers {
     };
 
 
-    void swapNode(const size_t lhs, const size_t rhs) {
-      assert(data_[lhs].parent != rhs);
-      assert(data_[rhs].parent != lhs);
-      std::swap(data_[lhs], data_[rhs]);
-      if (data_[lhs].parent != data_[rhs].parent) {
-        data_[data_[lhs].parent].changeChild(lhs, rhs);
-        data_[data_[rhs].parent].changeChild(rhs, lhs);
+	  /**
+     * \brief Поменять узлы местами.
+     * \param node1 Индекс первого узла.
+     * \param node2 Индекс второго узла.
+     */
+    void SwapNode(const size_t node1, const size_t node2) {
+      assert(data_[node1].parent != node2);
+      assert(data_[node2].parent != node1);
+      std::swap(data_[node1], data_[node2]);
+      if (data_[node1].parent != data_[node2].parent) {
+        data_[data_[node1].parent].ChangeChild(node1, node2);
+        data_[data_[node2].parent].ChangeChild(node2, node1);
       }
-      std::swap(data_[lhs].parent, data_[rhs].parent);
-      if (!data_[lhs].isLeaf()) {
-        data_[data_[lhs].leftChild].parent = lhs;
-        data_[data_[lhs].rightChild].parent = lhs;
+      std::swap(data_[node1].parent, data_[node2].parent);
+      if (!data_[node1].IsLeaf()) {
+        data_[data_[node1].left_child].parent = node1;
+        data_[data_[node1].right_child].parent = node1;
       }
-      if (!data_[rhs].isLeaf()) {
-        data_[data_[rhs].leftChild].parent = rhs;
-        data_[data_[rhs].rightChild].parent = rhs;
+      if (!data_[node2].IsLeaf()) {
+        data_[data_[node2].left_child].parent = node2;
+        data_[data_[node2].right_child].parent = node2;
       }
-      if (data_[lhs].isLeaf()) {
-        usedBytes_[data_[lhs].value].second = lhs;
+      if (data_[node1].IsLeaf()) {
+        used_bytes_[data_[node1].value].second = node1;
       }
-      if (data_[rhs].isLeaf()) {
-        usedBytes_[data_[rhs].value].second = rhs;
+      if (data_[node2].IsLeaf()) {
+        used_bytes_[data_[node2].value].second = node2;
       }
     }
 
 
-    bool isRoot(const size_t index) {
+	[[nodiscard]] bool IsRoot(const size_t index) {
       return data_[index].parent == index;
     }
 
-
-    bool isLeftChild(const size_t index) {
-      return data_[data_[index].parent].leftChild == index;
+	[[nodiscard]] bool IsLeftChild(const size_t index) {
+      return data_[data_[index].parent].left_child == index;
     }
 
-
-    bool isRightChild(const size_t index) {
-      return data_[data_[index].parent].rightChild == index;
+	[[nodiscard]] bool IsRightChild(const size_t index) {
+      return data_[data_[index].parent].right_child == index;
     }
 
-
-    size_t repairSortingForElement(const size_t index) {
+	  /**
+     * \brief Восстановить упорядоченность дерева после увеличения веса узла. 
+     * \param index Индекс узла с увеличенным весом. 
+     * \return Новый индекс узла с увеличенным весом.
+     */
+    size_t RepairSortingForElement(const size_t index) {
       if (index == 0) {
         return index;
       }
@@ -414,15 +479,14 @@ namespace custom_containers {
         if (i == 0) {
           return index;
         }
-        swapNode(i, index);
+        SwapNode(i, index);
         return i;
       }
       return index;
     }
 
-
     std::vector<Node> data_;
-    std::array<std::pair<bool, size_t>, 256> usedBytes_{{{false, 0}}};
+    std::array<std::pair<bool, size_t>, 256> used_bytes_{{{false, 0}}};
   };
 }
 
@@ -437,11 +501,20 @@ namespace custom_algorithms {
       return buffer_.size()/8;
     }
 
+	  /**
+     * \brief Передать символ на кодирование. 
+     * \param value Кодируемый символ. 
+     */
     void Push(const byte value) {
-      auto code = code_tree_.encode(value);
+      auto code = code_tree_.Encode(value);
       buffer_.insert(buffer_.end(), code.begin(), code.end());
     }
 
+	  /**
+     * \brief Получить 1 байт из закодированного потока.
+     * \param force Если true, то байт будем сформирован, даже если в закодированном потоке меньше 8 бит.  
+     * \return Сформированный байт.
+     */
     byte Pop(const bool force=false) {
       std::vector<bool> code;
       if (buffer_.size() - buffer_cursor_ > 8) {
@@ -465,8 +538,11 @@ namespace custom_algorithms {
       return value;
     }
 
+	  /**
+     * \brief Обозначить конец кодирования.
+     */
     void Eof() {
-      auto code = code_tree_.getNytCode();
+      auto code = code_tree_.GetNytCode();
       buffer_.insert(buffer_.end(), code.begin(), code.end());
     }
 
@@ -486,6 +562,10 @@ namespace custom_algorithms {
       return buffer_.size() / 8;
     }
 
+	  /**
+     * \brief Передать байт закодированного потока для раскодирования.
+     * \param value Байт закодированного потока.
+     */
     void Push(const byte value) {
       std::vector<bool> code;
       for (auto i = 0; i < 8; ++i) {
@@ -500,10 +580,14 @@ namespace custom_algorithms {
       buffer_.insert(buffer_.end(), code.begin(), code.end());
     }
 
+	  /**
+     * \brief Получить раскодированный символ из потока.
+     * \return Раскодированный символ.
+     */
     byte Pop() {
 		byte value{ 0 };
 		size_t shift{ 0 };
-		std::tie(value, shift) = code_tree_.decode(std::next(buffer_.begin(), buffer_cursor_), buffer_.end());
+		std::tie(value, shift) = code_tree_.Decode(std::next(buffer_.begin(), buffer_cursor_), buffer_.end());
       if (shift==0) {
         buffer_.clear();
 		buffer_cursor_ = 0;
@@ -513,6 +597,10 @@ namespace custom_algorithms {
       return value;
     }
 
+	  /**
+     * \brief Закончилось ли раскодирование.
+     * \return true - если раскодирование закончилось.
+     */
     [[nodiscard]] bool IsEof() const {
       return eof_;
     }
@@ -527,193 +615,193 @@ namespace custom_algorithms {
 
 
 void CodeTreeTest_checkSortingWithRepetitions1() {
-  custom_containers::CodeTree codeTree;
+  custom_containers::CodeTree code_tree;
 
-  codeTree.insert('a');
-  codeTree.insert('b');
-  codeTree.insert('b');
+  code_tree.Insert('a');
+  code_tree.Insert('b');
+  code_tree.Insert('b');
 }
 
 
 void CodeTreeTest_checkSortingWithRepetitions2() {
-  custom_containers::CodeTree codeTree;
-  codeTree.insert('a');
-  codeTree.insert('a');
-  codeTree.insert('r');
-  codeTree.insert('d');
-  codeTree.insert('v');
+  custom_containers::CodeTree code_tree;
+  code_tree.Insert('a');
+  code_tree.Insert('a');
+  code_tree.Insert('r');
+  code_tree.Insert('d');
+  code_tree.Insert('v');
 }
 
 
 void CodeTreeTest_checkSortingWithRepetitions3() {
-  custom_containers::CodeTree codeTree;
-  codeTree.insert('a');
-  codeTree.insert('a');
-  codeTree.insert('b');
-  codeTree.insert('b');
+  custom_containers::CodeTree code_tree;
+  code_tree.Insert('a');
+  code_tree.Insert('a');
+  code_tree.Insert('b');
+  code_tree.Insert('b');
 }
 
 
 void CodeTreeTest_checkSortingWithRepetitions4() {
-  custom_containers::CodeTree codeTree;
-  codeTree.insert('a');
-  codeTree.insert('b');
-  codeTree.insert('a');
-  codeTree.insert('b');
+  custom_containers::CodeTree code_tree;
+  code_tree.Insert('a');
+  code_tree.Insert('b');
+  code_tree.Insert('a');
+  code_tree.Insert('b');
 }
 
 
 void CodeTreeTest_checkSortingWithRepetitions5() {
-  custom_containers::CodeTree codeTree;
-  codeTree.insert('a');
-  codeTree.insert('a');
-  codeTree.insert('b');
-  codeTree.insert('c');
-  codeTree.insert('c');
-  codeTree.insert('c');
-  codeTree.insert('c');
+  custom_containers::CodeTree code_tree;
+  code_tree.Insert('a');
+  code_tree.Insert('a');
+  code_tree.Insert('b');
+  code_tree.Insert('c');
+  code_tree.Insert('c');
+  code_tree.Insert('c');
+  code_tree.Insert('c');
 }
 
 
 void CodeTreeTest_checkSortingWithoutRepetitions1() {
-  custom_containers::CodeTree codeTree;
-  codeTree.insert('a');
-  codeTree.insert('b');
-  codeTree.insert('c');
-  codeTree.insert('d');
+  custom_containers::CodeTree code_tree;
+  code_tree.Insert('a');
+  code_tree.Insert('b');
+  code_tree.Insert('c');
+  code_tree.Insert('d');
 }
 
 
 void CodeTreeTest_checkSortingWithoutRepetitions2() {
-  custom_containers::CodeTree codeTree;
-  codeTree.insert('a');
-  codeTree.insert('b');
-  codeTree.insert('c');
-  codeTree.insert('d');
-  codeTree.insert('e');
-  codeTree.insert('f');
+  custom_containers::CodeTree code_tree;
+  code_tree.Insert('a');
+  code_tree.Insert('b');
+  code_tree.Insert('c');
+  code_tree.Insert('d');
+  code_tree.Insert('e');
+  code_tree.Insert('f');
 }
 
 
 void CodeTreeTest_insertNull() {
-  custom_containers::CodeTree codeTree;
-  codeTree.insert('a');
-  codeTree.insert('b');
-  codeTree.insert(0);
+  custom_containers::CodeTree code_tree;
+  code_tree.Insert('a');
+  code_tree.Insert('b');
+  code_tree.Insert(0);
 }
 
 
 void CodeTreeTest_randomSmallBytes() {
-  custom_containers::CodeTree codeTree;
+  custom_containers::CodeTree code_tree;
   srand(time(nullptr));
   for (auto i = 0; i < 10; ++i) {
     const byte value = rand() % 5;
-    codeTree.insert(value);
+    code_tree.Insert(value);
   }
 }
 
 
 void CodeTreeTest_randomMediumBytes() {
-  custom_containers::CodeTree codeTree;
+  custom_containers::CodeTree code_tree;
   srand(time(nullptr));
   for (auto i = 0; i < 1000; ++i) {
     const byte value = rand() % 64;
-    codeTree.insert(value);
+    code_tree.Insert(value);
   }
 }
 
 
 void CodeTreeTest_randomLargeBytes() {
-  custom_containers::CodeTree codeTree;
+  custom_containers::CodeTree code_tree;
   srand(time(nullptr));
   for (auto i = 0; i < 10000; ++i) {
     const byte value = rand() % 256;
-    codeTree.insert(value);
+    code_tree.Insert(value);
   }
 }
 
 
 void CodeTreeTest_encodeAndDecodeStringWithoutRepetitions() {
   std::string str = "abcdefgh";
-  custom_containers::CodeTree encodeTree;
-  custom_containers::CodeTree decodeTree;
+  custom_containers::CodeTree encode_tree;
+  custom_containers::CodeTree decode_tree;
   for (auto ch : str) {
     const byte value = static_cast<byte>(ch);
-    auto code = encodeTree.encode(value);
-	byte decodedValue{ 0 };
-	size_t shiftBytes{ 0 };
-	std::tie(decodedValue, shiftBytes) = decodeTree.decode(code);
-    assert(encodeTree == decodeTree);
-    assert(value == decodedValue);
-    assert(shiftBytes == code.size());
+    auto code = encode_tree.Encode(value);
+	byte decoded_value{ 0 };
+	size_t shift_bytes{ 0 };
+	std::tie(decoded_value, shift_bytes) = decode_tree.Decode(code);
+    assert(encode_tree == decode_tree);
+    assert(value == decoded_value);
+    assert(shift_bytes == code.size());
   }
 }
 
 
 void CodeTreeTest_encodeAndDecodeStringWithRepetitions() {
   std::string str = "aabbcc";
-  custom_containers::CodeTree encodeTree;
-  custom_containers::CodeTree decodeTree;
+  custom_containers::CodeTree encode_tree;
+  custom_containers::CodeTree decode_tree;
   for (auto ch : str) {
     const byte value = static_cast<byte>(ch);
-    auto code = encodeTree.encode(value);
-	byte decodedValue{ 0 };
-	size_t shiftBytes{ 0 };
-	std::tie(decodedValue, shiftBytes) = decodeTree.decode(code);
-    assert(encodeTree == decodeTree);
-    assert(value == decodedValue);
-    assert(shiftBytes == code.size());
+    auto code = encode_tree.Encode(value);
+	byte decoded_value{ 0 };
+	size_t shift_bytes{ 0 };
+	std::tie(decoded_value, shift_bytes) = decode_tree.Decode(code);
+    assert(encode_tree == decode_tree);
+    assert(value == decoded_value);
+    assert(shift_bytes == code.size());
   }
 }
 
 
 void CodeTreeTest_encodeAndDecodeRandomSmallBytes() {
-  custom_containers::CodeTree encodeTree;
-  custom_containers::CodeTree decodeTree;
+  custom_containers::CodeTree encode_tree;
+  custom_containers::CodeTree decode_tree;
   srand(time(nullptr));
   for (auto i = 0; i < 10; ++i) {
     const byte value = rand() % 5;
-    auto code = encodeTree.encode(value);
-	byte decodedValue{ 0 };
-	size_t shiftBytes{ 0 };
-	std::tie(decodedValue, shiftBytes) = decodeTree.decode(code);
-    assert(encodeTree == decodeTree);
-    assert(value == decodedValue);
-    assert(shiftBytes == code.size());
+    auto code = encode_tree.Encode(value);
+	byte decoded_value{ 0 };
+	size_t shift_bytes{ 0 };
+	std::tie(decoded_value, shift_bytes) = decode_tree.Decode(code);
+    assert(encode_tree == decode_tree);
+    assert(value == decoded_value);
+    assert(shift_bytes == code.size());
   }
 }
 
 
 void CodeTreeTest_encodeAndDecodeRandomMediumBytes() {
-  custom_containers::CodeTree encodeTree;
-  custom_containers::CodeTree decodeTree;
+  custom_containers::CodeTree encode_tree;
+  custom_containers::CodeTree decode_tree;
   srand(time(nullptr));
   for (auto i = 0; i < 1000; ++i) {
     const byte value = rand() % 64;
-    auto code = encodeTree.encode(value);
-	byte decodedValue{ 0 };
-	size_t shiftBytes{ 0 };
-	std::tie(decodedValue, shiftBytes) = decodeTree.decode(code);
-    assert(encodeTree == decodeTree);
-    assert(value == decodedValue);
-    assert(shiftBytes == code.size());
+    auto code = encode_tree.Encode(value);
+	byte decoded_value{ 0 };
+	size_t shift_bytes{ 0 };
+	std::tie(decoded_value, shift_bytes) = decode_tree.Decode(code);
+    assert(encode_tree == decode_tree);
+    assert(value == decoded_value);
+    assert(shift_bytes == code.size());
   }
 }
 
 
 void CodeTreeTest_encodeAndDecodeRandomLargeBytes() {
-  custom_containers::CodeTree encodeTree;
-  custom_containers::CodeTree decodeTree;
+  custom_containers::CodeTree encode_tree;
+  custom_containers::CodeTree decode_tree;
   srand(time(nullptr));
   for (auto i = 0; i < 10000; ++i) {
     const byte value = rand() % 256;
-    auto code = encodeTree.encode(value);
-	byte decodedValue{ 0 };
-	size_t shiftBytes{ 0 };
-	std::tie(decodedValue, shiftBytes) = decodeTree.decode(code);
-    assert(encodeTree == decodeTree);
-    assert(value == decodedValue);
-    assert(shiftBytes == code.size());
+    auto code = encode_tree.Encode(value);
+	byte decoded_value{ 0 };
+	size_t shift_bytes{ 0 };
+	std::tie(decoded_value, shift_bytes) = decode_tree.Decode(code);
+    assert(encode_tree == decode_tree);
+    assert(value == decoded_value);
+    assert(shift_bytes == code.size());
   }
 }
 
@@ -803,13 +891,13 @@ void Decode(IInputStream& compressed, IOutputStream& original) {
 
 
 void StreamsTest_encodeAndDecode() {
-	IInputStream inOriginal(kStr);
-	IOutputStream outCompressed;
-	Encode(inOriginal, outCompressed);
-	IInputStream inCompressed(outCompressed.output);
-	IOutputStream outOriginal;
-	Decode(inCompressed, outOriginal);
-	assert(kStr == outOriginal.output);
+	IInputStream in_original(kStr);
+	IOutputStream out_compressed;
+	Encode(in_original, out_compressed);
+	IInputStream in_compressed(out_compressed.output);
+	IOutputStream out_original;
+	Decode(in_compressed, out_original);
+	assert(kStr == out_original.output);
 }
 
 
