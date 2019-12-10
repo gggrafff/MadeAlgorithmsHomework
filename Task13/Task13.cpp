@@ -158,7 +158,7 @@ namespace tag {
       auto [inverse_quality, x, y] = tag::CalculateParametersFieldSmart(field);
       zero_x = x;
       zero_y = y;
-      priority = inverse_quality + path.size()-1;
+      priority = inverse_quality + path.size();
     }
 
     Board(const Path15& oldPath, const char action, const Field15 field) {
@@ -168,7 +168,7 @@ namespace tag {
       auto [inverse_quality, x, y] = tag::CalculateParametersFieldSmart(field);
       zero_x = x;
       zero_y = y;
-      priority = inverse_quality + path.size()-1;
+      priority = inverse_quality + path.size();
     }
 
     [[nodiscard]] bool IsGood() const {
@@ -239,12 +239,9 @@ namespace tag {
       if (current_element.IsGood()) {
         return current_element.path;
       }
-	  if (current_element.path.size() == kMaxNumberSteps)
+	  if (current_element.priority >= kMaxNumberSteps || current_element.path.size() == kMaxNumberSteps)
 		  continue;
       current_element.CreateNeighbors(elements_for_processing);
-      /*for (auto& neighbor : neighbors) {
-          elements_for_processing.push(neighbor);
-      }*/
     }
     return {};
   }
