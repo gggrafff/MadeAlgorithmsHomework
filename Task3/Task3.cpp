@@ -41,6 +41,7 @@
 
 #include <iostream>
 #include <vector>
+#include <functional>
 
 namespace custom_algorithms
 {
@@ -48,10 +49,11 @@ namespace custom_algorithms
 	 * \brief Функция, выполняющая сортировку слиянием в исходном массиве с подсчётом инверсий.
 	 * \tparam T Тип элементов в массиве.
 	 * \param arrayNumbers Массив элементов.
+	 * \param less Функция сравнения элементов массива. Должна возвращать true, если первый её аргумент меньше второго.
 	 * \return Количество инверсий.
 	 */
 	template<typename T>
-	size_t mergeSort(std::vector<T>& arrayNumbers)
+	size_t mergeSort(std::vector<T>& arrayNumbers, const std::function<bool(const T& lhs, const T& rhs)> less = std::less<T>())
 	{
 		size_t inversionsNumber = 0;
 		for (size_t blockSize = 1; blockSize < arrayNumbers.size(); blockSize *= 2)
@@ -82,16 +84,18 @@ namespace custom_algorithms
                 //При обнаружении инверсий увеличиваем счётчик инверсий на величину = <длина левой части> - <индекс текущего элемента в левой части>
 				while (leftBorder + leftBlockIterator < midBorder && midBorder + rightBlockIterator < rightBorder)
 				{
-					if (arrayNumbers[leftBorder + leftBlockIterator] <= arrayNumbers[midBorder + rightBlockIterator])
+					if (less(arrayNumbers[midBorder + rightBlockIterator], arrayNumbers[leftBorder + leftBlockIterator]))
 					{
-						sortedBlock[leftBlockIterator + rightBlockIterator] = arrayNumbers[leftBorder + leftBlockIterator];
-						leftBlockIterator += 1;
-					}
-					else
-					{
+						//Элемент в правой части меньше элемента в левой. Инверсия.
 						sortedBlock[leftBlockIterator + rightBlockIterator] = arrayNumbers[midBorder + rightBlockIterator];
 						inversionsNumber += (midBorder - leftBorder) - leftBlockIterator;
 						rightBlockIterator += 1;
+					}
+					else
+					{
+						//Элемент в левой части не больше элемента в правой. Инверсии нет.
+						sortedBlock[leftBlockIterator + rightBlockIterator] = arrayNumbers[leftBorder + leftBlockIterator];
+						leftBlockIterator += 1;
 					}
 				}
 				//После этого заносим оставшиеся элементы из левого или правого блока
