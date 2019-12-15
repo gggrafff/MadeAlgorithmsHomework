@@ -24,7 +24,7 @@ namespace custom_containers
 		 * \param hash2 вторая хеш-функция для разрешения коллизий
 		 */
 		HashMap(const std::function<size_t(const T&)>& hash1, const std::function<size_t(const T&)>& hash2) : hash1_(hash1), hash2_(hash2) {}
-		~HashMap();
+		~HashMap() = default;
 
 		HashMap(const HashMap& other) = delete;
 		HashMap(HashMap&& other) noexcept = delete;
@@ -88,7 +88,7 @@ namespace custom_containers
 		struct Node
 		{
 			explicit Node(const T& value) : key(value) {}
-			explicit Node(T&& value) : key(std::forward(value)) {}
+			explicit Node(T&& value) : key(std::forward<T>(value)) {}
 			
 
 			Node(const Node& other)
@@ -143,7 +143,7 @@ namespace custom_containers
 		 * \param stoppingCondition Флаги, указывающие критерии остановки. Флаги выставляются с помощью enum StoppingCondition.
 		 * \return std::pair, в котором первый элемент - индекс в буфере, второй - исход пробирования типа PositionType.
 		 */
-		Position probePositionsInto(const T& key, std::vector<std::optional<Node>>& data, uint8_t stoppingCondition = StoppingCondition::STOP_FOR_ALL) const;
+		Position probePositionsInto(const T& key, const std::vector<std::optional<Node>>& data, uint8_t stoppingCondition = StoppingCondition::STOP_FOR_ALL) const;
 
 		/**
 		 * \brief Увеличивает размер хеш-таблицы в указанное количество раз.
@@ -202,15 +202,6 @@ namespace custom_containers
 	};
 
 	template <typename T>
-	HashMap<T>::~HashMap()
-	{
-		for (auto nodePtr : data_)
-		{
-			delete nodePtr;
-		}
-	}
-
-	template <typename T>
 	bool HashMap<T>::insert(const T& key)
 	{
 		if (contains(key))
@@ -266,7 +257,7 @@ namespace custom_containers
 	}
 
 	template <typename T>
-	typename HashMap<T>::Position HashMap<T>::probePositionsInto(const T& key, std::vector<std::optional<Node>>& data, uint8_t stoppingCondition) const
+	typename HashMap<T>::Position HashMap<T>::probePositionsInto(const T& key, const std::vector<std::optional<Node>>& data, uint8_t stoppingCondition) const
 	{
 		auto firstHash = hash1_(key);
 		auto secondHash = hash2_(key);
@@ -324,7 +315,7 @@ namespace custom_containers
 	std::pair<float, float> HashMap<T>::calculateFullness() const
 	{
 		const auto contains_number = static_cast<float>(size_) / static_cast<float>(data_.size());
-		const auto deleted_number = static_cast<float>(deleted_number) / static_cast<float>(data_.size());
+		const auto deleted_number = static_cast<float>(deleted_number_) / static_cast<float>(data_.size());
 		return {contains_number, deleted_number};
 	}
 
