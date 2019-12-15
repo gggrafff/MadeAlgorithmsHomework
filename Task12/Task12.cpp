@@ -151,19 +151,19 @@ namespace custom_algorithms {
 					graph,
 					i,
 					[&time_in, &fup, &timer](const size_t currentElement) {
-				time_in[currentElement] = fup[currentElement] = timer++;
+				time_in[currentElement] = fup[currentElement] = timer++;  // фиксируем время входа
 			},
 			{},
 				[&time_in, &fup, &visited](const custom_containers::LineOfEnumeratedGraph line) {
 				auto[from, to, line_id] = line;
 				if (visited[to]) {
-					fup[from] = std::min(fup[from], time_in[to]);
+					fup[from] = std::min(fup[from], time_in[to]);  // при повторном попадании в вершину по обратному ребру fup должен быть пересчитан
 				}
 			},
 				[&bridges, &time_in, &fup](const custom_containers::LineOfEnumeratedGraph line) {
 				auto[from, to, line_id] = line;
-				fup[from] = std::min(fup[from], fup[to]);
-				if (fup[to] > time_in[from]) {
+				fup[from] = std::min(fup[from], fup[to]);  // распространяем значение fup, полученное при обнаружении обратного ребра
+				if (fup[to] > time_in[from]) {  // мост ли это?
 					bridges.push_back(line);
 				}
 			},
