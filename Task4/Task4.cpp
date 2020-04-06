@@ -51,11 +51,12 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <functional>
 
 namespace custom_algorithms
 {
     /**
-     * \brief Класс, объединяющий функции, участвующие в алгоритме быстрой сортировки и подсчёте статистик.
+     * \brief Класс, объединяющий функции, участвующие в алгоритме быстрой сортировки и подсчёте статистик. 
      */
 	class QuickSort
 	{
@@ -65,10 +66,11 @@ namespace custom_algorithms
 		 * \tparam T Тип элементов в массиве.
 		 * \param arrayElements Массив элементов.
 		 * \param k Порядок подсчитываемой статистики.
+		 * \param less Функция сравнения элементов массива. Должна возвращать true, если первый её аргумент меньше второго.
 		 * \return k-я порядковая статистика.
 		 */
 		template<typename T>
-		static size_t calculateStatistic(std::vector<T>& arrayElements, const size_t k);
+		static size_t calculateStatistic(std::vector<T>& arrayElements, const size_t k, const std::function<bool(const T& lhs, const T& rhs)> less = std::less<T>());
 	private:
 		/**
 		 * \brief Функция, разделяющая элементы в подмассиве на большие и меньшие опорного на каждом шаге быстрой сортировки.
@@ -76,10 +78,11 @@ namespace custom_algorithms
 		 * \param arrayElements Массив элементов.
 		 * \param low Индекс первого элемента подмассива в массиве.
 		 * \param high Индекс последнего элемента подмассива в массиве.
+		 * \param less Функция сравнения элементов массива. Должна возвращать true, если первый её аргумент меньше второго.
 		 * \return Индекс опорного элемента после упорядочивания.
 		 */
 		template<typename T>
-		static size_t partition(std::vector<T>& arrayElements, const size_t low, const size_t high);
+		static size_t partition(std::vector<T>& arrayElements, const size_t low, const size_t high, const std::function<bool(const T& lhs, const T& rhs)>& less);
 
 		/**
 		 * \brief Функция, выбирающая опорный элемент в подмассиве.
@@ -90,15 +93,16 @@ namespace custom_algorithms
 		 * \param arrayElements Массив элементов.
 		 * \param low Индекс первого элемента подмассива в массиве.
 		 * \param high Индекс последнего элемента подмассива в массиве.
+		 * \param less Функция сравнения элементов массива. Должна возвращать true, если первый её аргумент меньше второго.
 		 */
 		template<typename T>
-		static void selectMainElement(std::vector<T>& arrayElements, size_t low, size_t high);
+		static void selectMainElement(std::vector<T>& arrayElements, size_t low, size_t high, const std::function<bool(const T& lhs, const T& rhs)>& less);
 	};
 
 
 
     template <typename T>
-    size_t custom_algorithms::QuickSort::calculateStatistic(std::vector<T>& arrayElements, const size_t k)
+    size_t custom_algorithms::QuickSort::calculateStatistic(std::vector<T>& arrayElements, const size_t k, const std::function<bool(const T& lhs, const T& rhs)> less)
     {
         size_t currentMainElementPosition = arrayElements.size();
         size_t leftBorder = 0;
@@ -113,14 +117,14 @@ namespace custom_algorithms
             if (currentMainElementPosition > k)
             {
                 rightBorder = currentMainElementPosition - 1;
-                selectMainElement(arrayElements, leftBorder, rightBorder);
-                currentMainElementPosition = partition(arrayElements, leftBorder, rightBorder);
+                selectMainElement(arrayElements, leftBorder, rightBorder, less);
+                currentMainElementPosition = partition(arrayElements, leftBorder, rightBorder, less);
             }
             else
             {
                 leftBorder = currentMainElementPosition + 1;
-                selectMainElement(arrayElements, leftBorder, rightBorder);
-                currentMainElementPosition = partition(arrayElements, leftBorder, rightBorder);
+                selectMainElement(arrayElements, leftBorder, rightBorder, less);
+                currentMainElementPosition = partition(arrayElements, leftBorder, rightBorder, less);
             }
         }
         return arrayElements[currentMainElementPosition];
@@ -129,7 +133,7 @@ namespace custom_algorithms
 
 
     template <typename T>
-    size_t QuickSort::partition(std::vector<T>& arrayElements, const size_t low, const size_t high)
+    size_t QuickSort::partition(std::vector<T>& arrayElements, const size_t low, const size_t high, const std::function<bool(const T& lhs, const T& rhs)>& less)
     {
         /*
          * Во время работы Partition в начале массива содержатся элементы, не бОльшие опорного. 
@@ -144,7 +148,7 @@ namespace custom_algorithms
          */
 
         auto leftIterator = low;
-        while (arrayElements[leftIterator] <= arrayElements[high] && leftIterator < high)
+        while (!less(arrayElements[high], arrayElements[leftIterator]) && (leftIterator < high))
         {
             leftIterator += 1;
         }
@@ -155,11 +159,7 @@ namespace custom_algorithms
 
         for (auto rightIterator = leftIterator + 1; rightIterator < high; ++rightIterator)
         {
-            if (arrayElements[rightIterator] > arrayElements[high])
-            {
-                continue;
-            }
-            else
+            if (!less(arrayElements[high], arrayElements[rightIterator]))
             {
                 std::swap(arrayElements[leftIterator], arrayElements[rightIterator]);
                 leftIterator += 1;
@@ -172,18 +172,18 @@ namespace custom_algorithms
 
 
     template <typename T>
-    void QuickSort::selectMainElement(std::vector<T>& arrayElements, size_t low, size_t high)
+    void QuickSort::selectMainElement(std::vector<T>& arrayElements, size_t low, size_t high, const std::function<bool(const T& lhs, const T& rhs)>& less)
     {
         auto mid = (low + high) / 2;
-        if (arrayElements[mid] < arrayElements[low])
+        if (less(arrayElements[mid], arrayElements[low]))
         {
             std::swap(arrayElements[mid], arrayElements[low]);
         }
-        if (arrayElements[high] < arrayElements[low])
+        if (less(arrayElements[high], arrayElements[low]))
         {
             std::swap(arrayElements[high], arrayElements[low]);
         }
-        if (arrayElements[mid] < arrayElements[high])
+        if (less(arrayElements[mid], arrayElements[high]))
         {
             std::swap(arrayElements[mid], arrayElements[high]);
         }
